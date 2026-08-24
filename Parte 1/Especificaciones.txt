@@ -1,0 +1,39 @@
+# WEB_2-TPE_parte_1
+Trabajo practico entregable para Web_2 de la carrera Tudai
+
+### Integrantes del grupo ###
+-- Andres Coda - acoda@alumnos.exa.unicen.edu.ar
+
+### Tematica del Tpe ###
+La idea del trabajo es crear una app que sirva de anotador para les jefxes de catedra de las diferentes areas en la educación secundaria bonaerense, para
+facilita el seguimiento y la administración de datos de profesorxs, planificación, cursos, materias y horarios.
+La app va a tener acceso libre para cualquier persona que entre a la pagina, va a poder ver las escuelas, las areas, los cursos, carga horaria de materias, 
+dias y horario que se cursa cada materia. Como un calendario de materias de las escuelas cargadas.
+
+Les usuaries (jefxs de catedra) van hacer crud sobre datos de les profesorxs de cada curso, de cada materia perteneciente a su area,
+y si entregaron planificación y trabajos practicos para les alumnes. 
+
+### Diagrama de relaciones de entidades ###
+El proyecto cuenta con once tablas (area, curso, curso_completo, curso_completo_profe, curso_escuela, 
+curso_escuela_dia, dia, escuela, materia, profesor, usuario). 
+La tabla usuario va a tener el control de las tablas relacionada con ella, y va a tener permisos para insertar, editar y eliminar datos.
+El administrador va a tener privilegios para editar, y eliminar algunso tablas especificas.
+
+Hay relaciones 1--N entre las siguientes tablas
+
+usuario (1 ----- N) curso_completo;
+usuario (1 ----- N) profesor;
+escuela (1 ----- N) curso_escuela;
+curso   (1 ----- N) curso_escuela;
+materia (1 ----- N) curso_escuela;
+dia     (1 ----- N) curso_escuela_dia;
+curso_escuela (1 --- N) curso_escuela_dia;
+area    (1 ----- N) materia;
+
+Y relaciones  N--N entre las siguientes tablas
+
+profesor (N ---- N) curso_completo;
+
+El diagrama esta en la imágen png. Fue realizado con la construcción automatica de diagramas de Date Grip 2026.
+El codigo de la base de datos completo, con funciones, y politica de seguridad esta en db_jefe_catedra.txt. Ese codigo fue creado por 
+el generador de codigo de Data Grip. Donde fue programada la base de datos.
