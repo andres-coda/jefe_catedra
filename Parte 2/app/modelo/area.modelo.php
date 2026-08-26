@@ -1,13 +1,84 @@
 <?php
+require_once('app/modelos/Modelo.php');
 
-class   AreaModelo {
-  private PDO $db;
+class AreaModelo extends Modelo
+{
 
-  public function __construct(){
-    $this->db = DataBase::getConection();
+  public function obtenerAreas()
+  {
+    try {
+
+      $sentencia = $this->getPdo()->prepare('
+          SELECT * FROM area ORDER BY nombre
+        ');
+      $sentencia->execute();
+      $areas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+      return $areas;
+    } catch (\Throwable $th) {
+      return false;
+    }
   }
 
-  public function obtenerAreas(){
-    
+  public function obtenerAreaPorId($id)
+  {
+    try {
+      $sentencia = $this->getPdo()->prepare('
+          SELECT * FROM area a
+          JOIN materia m ON m.id_area = a.id
+          WHERE a.id = ?
+        ');
+      $sentencia->execute([$id]);
+      $area = $sentencia->fetch(PDO::FETCH_ASSOC);
+      return $area;
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
+
+  public function insertarArea($nombreArea)
+  {
+
+    try {
+      $sentencia = $this->getPdo()->prepare('
+          INSERT INTO area (nombre) VALUES (?)
+        ');
+      $sentencia->execute([$nombreArea]);
+
+      $ultimoId = $this->getPdo()->lastInsertId();
+
+      return $ultimoId;
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
+
+  public function editarArea($id, $nombreArea)
+  {
+    try {
+      $sentencia = $this->getPdo()->prepare('
+        UPDATE area SET nombre = ? 
+        WHERE id = ?
+      ');
+      $sentencia->execute([$nombreArea, $id]);
+      $area = $sentencia->fetch(PDO::FETCH_ASSOC);
+      return $area;
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
+
+  public function delete($id)
+  {
+    try {
+      $sentencia = $this->getPdo()->prepare('
+        DELETE FROM area WHERE id = ?
+      ');
+      $sentencia->execute([$id]);
+
+      return true;
+    } catch (\Throwable $th) {
+      return false;
+    }
   }
 }
