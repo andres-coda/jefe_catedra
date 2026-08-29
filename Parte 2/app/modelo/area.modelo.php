@@ -12,7 +12,7 @@ class AreaModelo extends Modelo
           SELECT * FROM area ORDER BY nombre
         ');
       $sentencia->execute();
-      $areas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+      $areas = $sentencia->fetchAll(PDO::FETCH_OBJ);
 
       return $areas;
     } catch (\Throwable $th) {
@@ -29,7 +29,7 @@ class AreaModelo extends Modelo
           WHERE a.id = ?
         ');
       $sentencia->execute([$id]);
-      $area = $sentencia->fetch(PDO::FETCH_ASSOC);
+      $area = $sentencia->fetch(PDO::FETCH_OBJ);
       return $area;
     } catch (\Throwable $th) {
       return false;
@@ -42,12 +42,13 @@ class AreaModelo extends Modelo
     try {
       $sentencia = $this->getPdo()->prepare('
           INSERT INTO area (nombre) VALUES (?)
+          RETURNING *
         ');
       $sentencia->execute([$nombreArea]);
 
-      $ultimoId = $this->getPdo()->lastInsertId();
+      $area = $sentencia->fetch(PDO::FETCH_OBJ);
 
-      return $ultimoId;
+      return $area;
     } catch (\Throwable $th) {
       return false;
     }
@@ -59,9 +60,10 @@ class AreaModelo extends Modelo
       $sentencia = $this->getPdo()->prepare('
         UPDATE area SET nombre = ? 
         WHERE id = ?
+        RETURNING *
       ');
       $sentencia->execute([$nombreArea, $id]);
-      $area = $sentencia->fetch(PDO::FETCH_ASSOC);
+      $area = $sentencia->fetch(PDO::FETCH_OBJ);
       return $area;
     } catch (\Throwable $th) {
       return false;
