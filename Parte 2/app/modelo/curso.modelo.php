@@ -36,21 +36,6 @@ class CursoModelo extends Modelo
     }
   }
 
-  public function obtenerCursoCompletoPorId($id)
-  {
-    try {
-      $sentencia = $this->getPdo()->prepare('
-          SELECT * FROM vw_curso_completo 
-          WHERE id_curso_completo = ?
-        ');
-      $sentencia->execute([$id]);
-      $curso = $sentencia->fetch(PDO::FETCH_OBJ);
-      return $curso;
-    } catch (\Throwable $th) {
-      return false;
-    }
-  }
-
   public function insertarCurso($nombreCurso)
   {
 
