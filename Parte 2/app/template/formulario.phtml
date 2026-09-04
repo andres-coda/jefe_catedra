@@ -1,0 +1,12 @@
+<div class="conteiner">
+  <form method="post" action="<?= $formulario->accion ?>">
+
+    <?php foreach ($formulario->datos as $dato) {
+        require './app/template/input.phtml';
+    } ?>
+
+    <button type="reset"><?= $formulario->borrar ?? 'recetear formulario' ?></button>
+    <button type="submit"><?= $formulario->aceptar ?? 'aceptar' ?></button>
+
+  </form>
+</div>

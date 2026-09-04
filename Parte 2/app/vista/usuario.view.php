@@ -1,5 +1,16 @@
 <?php
-$formulario = (object) [
+
+class UsuarioView
+{
+
+  public function mostrarRegistro()
+  {
+    require './app/templates/usuario.phtml';
+  }
+
+  public function mostrarLogin()
+  {
+    $formulario = (object) [
     'accion' => 'login',
     'borrar' => 'Limpiar',
     'aceptar' => 'Ingresar',
@@ -24,10 +35,6 @@ $formulario = (object) [
         ]
     ]
 ];
-require './app/template/cabecera.phtml';
-require './app/template/heder.phtml'; 
-
-require './app/template/formulario.phtml'; 
-require './app/template/footer.phtml'; 
-
-?>
+    require './app/templates/formulario.phtml';
+  }
+}
