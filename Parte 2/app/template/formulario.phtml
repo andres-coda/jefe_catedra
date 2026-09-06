@@ -5,8 +5,11 @@
         require './app/template/input.phtml';
     } ?>
 
+  <div class="botonera">
+
     <button type="reset"><?= $formulario->borrar ?? 'recetear formulario' ?></button>
     <button type="submit"><?= $formulario->aceptar ?? 'aceptar' ?></button>
+  </div>
 
   </form>
 </div>

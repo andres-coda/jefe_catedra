@@ -4,7 +4,7 @@
   background-color: var(--colorBlanco);
 
   --colorFondo: #f7f7e4;
-  --colorBoton: #145a1ee5;
+  --colorPrimario: #145a1ee5;
   --colorSubmenu: #8ed14a91;
   --colorCardGris: #dfd9d9;
   --colorCardVerde: #beec8f;
@@ -18,7 +18,15 @@
   --colorPropuesta: #e9b882;
 }
 
-.conteiner{
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--colorFondo);
+}
+
+.conteiner {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -26,244 +34,78 @@
   gap: 1rem;
   flex: 1;
   height: 80vh;
+  padding: .5rem 1rem;
 }
-
-form{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
+nav{
+  overflow: hidden;
+  padding: .1rem;
+  background-color: var(--colorPrimario);
 }
-
-.inputs-span {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin: 0.2rem 0;
-  box-sizing: border-box;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-
-.inputs-span span {
-  padding: 0.1rem 0.5rem;
-  min-height: .5rem;
-  width: 100%;
-  box-sizing: border-box;
-  text-align: right;
-  color: var(--colorError);
-}
-
-.inputs-entero {
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.inputs-entero input{
-  font-size: 1rem;
-  background-color: transparent;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 5px;
-  height: 36px;
-  padding: 9px 0.5rem 0 0.5rem;
-  border: .5px solid var(--colorSombra);
-  color: var(--colorNegro)
-}
-
-.inputs-entero input:focus{
-  border: .5px solid var(--colorNegro);
-  outline: none;
-}
-
-.inputs-entero label {
-  position: absolute;
-  color: var(--colorSombra);
-  top: 50%;
-  left: 0.5rem;
-  transform: translateY(-50%);
-  pointer-events: none;
-  transition: all 0.2s ease;
-  background-color: transparent;
-  font-size: .8em;
-  font-weight: 200;
-}
-
-.inputs-entero input:focus+label,
-.inputs-entero input:not(:placeholder-shown)+label{
-  top: 0;
-  left: 0;
-  font-size: 0.8em;
-  font-weight: 400;
-  color: var(--colorSombra);
-  background-color: var(--colorFondo);
-  padding: 0.1rem 1rem;
-  transform: translate(15%, -50%);
-  border-radius: 20px;
-}
-
-
-.alin-derecha input {
-  text-align: right;
-}
-
-.is-invalida input:focus,
-.is-invalida select:focus,
-.is-invalida textarea:focus {
-  border: 1px solid var(--colorError);
-}
-
-
-
-
-.inputs-entero textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-.input-buscador {
+nav,
+nav ul {
   display: flex;
   flex-direction: row;
-  flex: 1;
-  align-items: stretch;
-  gap: 0;
-  flex-shrink: 0;
-  vertical-align: middle;
-  margin-top: .5rem;
-}
-
-.input-buscador input:placeholder-shown:not(:focus) {
-  border-right: none;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
-
-.btn-buscador {
-  border-radius: 5px;
-  margin-top: 3px;
-  border: .5px solid var(--colorSombra);
-  box-shadow: none;
-  color: var(--colorNegro);
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease,
-    width 0.2s ease,
-    margin 0.2s ease,
-    visibility 0.2s ease;
-  width: 36px;
-  margin-right: 3px;
-  visibility: visible;
-}
-
-.btn-oculto {
-  opacity: 0;
-  transform: scale(0.8);
-  pointer-events: none;
-  width: 0 !important; /* Forzar el ancho */
-  margin: 0 !important;
-  visibility: hidden;
-  transition: all 0.2s ease; /* Suavizar transición */
-}
-
-.btn-lupa {
-  border-left: none;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-  pointer-events: none;
-}
-
-
-.input-checkbox {
-  display: flex;
-  gap: 1rem;
-  padding: .2rem;
-  flex: 1;
-  box-sizing: border-box;
-}
-
-.input-checkbox-label {
-  display: flex;
-  text-wrap: nowrap;
+  justify-content: center;
   align-items: center;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 0.9em;
-}
-
-.input-checkbox:hover {
-  box-shadow: 1px 1px 1px var(--colorSombra);
-  border-radius: 5px;
-}
-
-.input-checkbox input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-  border-radius: 200%;
-  border: 1px solid var(--colorSombra);
-  vertical-align: middle;
-  /* Alinea verticalmente con el texto */
-  appearance: none;
-  /* Para resetear estilos de algunos navegadores */
-  -webkit-appearance: none;
-  /* Para Safari/Chrome */
-  -moz-appearance: none;
-  /* Para Firefox */
-  background-color: transparent;
-  cursor: pointer;
-  position: relative;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-
-}
-
-.input-checkbox input[type="checkbox"]:checked {
-  background-color: var(--colorCardVerde);
-  border-color: var(--colorNegro);
-}
-
-.input-checkbox input:checked {
-  background-color: var(--colorCardVerde);
-  /* Cambia el color de fondo cuando está marcado */
-  border-color: 2px solid var(--colorNegro);
-  /* Cambia el color del borde cuando está marcado */
-}
-
-.input-checkbox input[type="checkbox"]:checked::after {
-  content: '✔';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--colorNegro);
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.input-checkbox input:focus {
-  outline: none;
-  /* Elimina el contorno al enfocar */
-}
-
-.inputCheck-fuera-formulario{
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: .1rem;
   margin: 0;
-  border-radius: 5px;
-  padding: 0.5rem 0;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.inputCheck-fuera-formulario li{
-  text-align: start;
-  padding: .2rem;
-  margin: 0 .2rem;
-  font-size: 0.8em;
+nav ul {
+  list-style: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+}
+
+nav ul li {
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+nav ul li:hover {
+  box-shadow: 1px 1px 1px var(--colorSombra);
+}
+
+nav ul li:active {
+  background-color: var(--colorSubmenu);
+}
+
+nav a {
+  color: var(--colorBlanco);
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+nav a:hover {
+  scale: 1.1;
+}
+
+.botonera{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 600px;
+}
+
+button{
+  border-radius: 10px;
+  background-color: var(--colorPrimario);
+  color: var(--colorBlanco);
+  padding: .5rem 1rem;
+  cursor: pointer;
+  border: none;
+}
+
+button:hover{
+  box-shadow: 1px 1px 1px var(--colorSombra);
+  scale: 1.05;
 }

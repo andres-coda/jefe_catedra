@@ -3,9 +3,9 @@
 $configuracion = [];
 
 $configuracion['host'] = 'localhost';
-$configuracion['usuario'] = 'root';
+$configuracion['usuario'] = 'postgres';
 $configuracion['password'] = 'root';
-$configuracion['basenombre'] = 'tpe_web_2';
+$configuracion['basenombre'] = 'jefe_catedra';
 $configuracion['puerto'] = '5432';
 $configuracion['base_url'] = '';
 

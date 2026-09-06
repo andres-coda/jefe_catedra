@@ -1,5 +1,5 @@
 <?php
-require_once('app/modelos/Modelo.php');
+require_once('app/modelo/Modelo.php');
 
 class EscuelaModelo extends Modelo
 {

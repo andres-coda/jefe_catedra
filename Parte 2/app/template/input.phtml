@@ -2,7 +2,7 @@
   <span><?= $dato->requerido ? '*' : '' ?></span>
   <div class='inputs-entero'>
     <input 
-      type=<?= $dato->tipo ?? 'text' ?>
+      type="<?= $dato->tipo ?? 'text' ?>"
       id="<?= $dato->id?>"
       name="<?= $dato->id?>"
       value="<?= $dato->valor ?? '' ?>"

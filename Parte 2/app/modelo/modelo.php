@@ -1,6 +1,6 @@
 <?php
 
-require_once('config/config.php');
+require_once('config/claves.php');
 
 class Modelo
 {
@@ -28,7 +28,7 @@ class Modelo
     $port = $configuracion['puerto'];
 
     try {
-      $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$database;charset=utf8", $user, $password);
+      $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$database", $user, $password);
     } catch (\Throwable $th) {
       die($th);
     }
