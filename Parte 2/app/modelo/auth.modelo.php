@@ -16,7 +16,7 @@ class AuthModelo extends Modelo
     try {
 
       $passHash = password_hash($pass, PASSWORD_DEFAULT);
-      
+
       $sentencia = $this->getPdo()->prepare('
           INSERT INTO usuario (nombre, email, pass, cargo) VALUES (?, ?,?,?)
           RETURNING nombre

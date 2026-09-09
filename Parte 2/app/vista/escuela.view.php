@@ -1,10 +1,13 @@
 <?php
-class EscuelaView
+
+require_once('app/vista/view.php');
+class EscuelaView extends View
 {
-  public function crearEscuela($err = null)
+  public function crearEscuela($datos = null, $err = null)
   {
     $formulario = (object) [
-      'accion' => 'crearEscuela',
+      'titulo' => 'Crear escuela',
+      'accion' => 'escuela/crearEscuela',
       'borrar' => 'Limpiar',
       'aceptar' => 'Crear Escuela',
 
@@ -12,17 +15,21 @@ class EscuelaView
         (object) [
           'id' => 'nombre',
           'label' => 'Nombre de la nueva escuela',
-          'tipo' => '',
+          'tipo' => 'text',
           'requerido' => true,
-          'valor' => '',
-          'error' => $err
+          'valor' => $datos->nombre ?? '',
+          'error' => $err->nombre ?? null
         ]
       ]
     ];
 
-    require_once("app/template/cabecera.phtml");
-    require_once("app/template/heder.phtml");
-    require_once("app/template/formulario.phtml");
-    require_once("app/template/footer.phtml");
+    $this->maquetaFormulario($formulario);
+  }
+
+  public function mostrarEscuelas($escuelas){
+    $card = './app/template/escuela.card.phtml';
+    $nuevaEscuela = BASE_URL . 'escuela/nueva';
+    $this->mostrarElementos($escuelas, $card, $nuevaEscuela);
   }
 }
+

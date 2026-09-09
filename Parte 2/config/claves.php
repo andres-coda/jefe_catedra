@@ -3,7 +3,7 @@
 $configuracion = [];
 
 $configuracion['host'] = 'localhost';
-$configuracion['usuario'] = 'postgres';
+$configuracion['usuario'] = 'app_role';
 $configuracion['password'] = 'root';
 $configuracion['basenombre'] = 'jefe_catedra';
 $configuracion['puerto'] = '5432';

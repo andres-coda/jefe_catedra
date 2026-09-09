@@ -1,8 +1,42 @@
 <?php
-require_once('app/modelos/Modelo.php');
+require_once('app/modelo/modelo.php');
 
 class CursoEscuelaModelo extends Modelo
 {
+
+  public function obtenerCursoPorNombre($nombre)
+  {
+    try {
+      $sentencia = $this->getPdo()->prepare('
+          SELECT id FROM curso 
+          WHERE nombre = ?
+        ');
+      $sentencia->execute([$nombre]);
+      $curso = $sentencia->fetch(PDO::FETCH_OBJ);
+      return $curso;
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
+
+  public function insertarCurso($nombre)
+  {
+
+    try {
+      $sentencia = $this->getPdo()->prepare('
+          INSERT INTO curso (nombre) 
+          VALUES (?)
+          RETURNING *
+        ');
+      $sentencia->execute([$nombre]);
+
+      $curso = $sentencia->fetch(PDO::FETCH_OBJ);
+
+      return $curso;
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
 
   public function obtenerCursoEscuelaPorId($id)
   {
@@ -19,7 +53,20 @@ class CursoEscuelaModelo extends Modelo
     }
   }
 
-  public function insertarCursoEscuela($id_escuela, $id_curso, $id_materia, $carga_horaria, $anio, $dia)
+  public function obtenerMateriaPorNombre($nombre)
+  {
+    $sentencia = $this->getPdo()->prepare('
+        SELECT *
+        FROM materia
+        WHERE nombre = ?
+    ');
+
+    $sentencia->execute([$nombre]);
+
+    return $sentencia->fetch(PDO::FETCH_OBJ);
+  }
+
+  public function insertarCursoEscuela($id_escuela, $id_curso, $id_materia, $carga_horaria, $anio)
   {
 
     try {

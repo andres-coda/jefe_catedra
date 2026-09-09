@@ -1,9 +1,13 @@
 <?php
-class AuthView
+
+
+require_once('app/vista/view.php');
+class AuthView extends View
 {
   public function mostrarLogin($datos = null, $err = null)
   {
     $formulario = (object) [
+      'titulo' => 'Iniciar sesión',
       'accion' => 'enviarLogin',
       'borrar' => 'Limpiar',
       'aceptar' => 'Ingresar',
@@ -29,15 +33,13 @@ class AuthView
       ]
     ];
 
-    require_once("app/template/cabecera.phtml");
-    require_once("app/template/heder.phtml");
-    require_once("app/template/formulario.phtml");
-    require_once("app/template/footer.phtml");
+    $this->maquetaFormulario($formulario);
   }
 
   public function mostrarRegistro($datos = null, $err = null)
   {
     $formulario = (object) [
+      'titulo' => 'Registrarse',
       'accion' => 'enviarRegistro',
       'borrar' => 'Limpiar',
       'aceptar' => 'Registrarse',
@@ -81,9 +83,6 @@ class AuthView
       ]
     ];
 
-    require_once("app/template/cabecera.phtml");
-    require_once("app/template/heder.phtml");
-    require_once("app/template/formulario.phtml");
-    require_once("app/template/footer.phtml");
+    $this->maquetaFormulario($formulario);
   }
 }

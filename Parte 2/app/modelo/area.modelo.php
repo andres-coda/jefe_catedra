@@ -1,5 +1,5 @@
 <?php
-require_once('app/modelos/Modelo.php');
+require_once('app/modelo/modelo.php');
 
 class AreaModelo extends Modelo
 {
@@ -15,6 +15,25 @@ class AreaModelo extends Modelo
       $areas = $sentencia->fetchAll(PDO::FETCH_OBJ);
 
       return $areas;
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
+
+  public function obtenerAreaPorNombre($nombre)
+  {
+
+    try {
+      $sentencia = $this->getPdo()->prepare('
+          INSERT INTO area (nombre) 
+          VALUES (?)
+          RETURNING *
+        ');
+      $sentencia->execute([$nombre]);
+
+      $area = $sentencia->fetch(PDO::FETCH_OBJ);
+
+      return $area;
     } catch (\Throwable $th) {
       return false;
     }

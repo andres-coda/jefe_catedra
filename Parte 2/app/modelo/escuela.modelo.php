@@ -50,7 +50,6 @@ class EscuelaModelo extends Modelo
       $sentencia->execute([$nombreEscuela]);
 
       $escuela = $sentencia->fetch(PDO::FETCH_OBJ);
-
       return $escuela;
     } catch (\Throwable $th) {
       return false;

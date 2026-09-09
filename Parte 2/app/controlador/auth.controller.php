@@ -20,31 +20,11 @@ class AuthController extends Controller
     $this->view->mostrarRegistro();
   }
 
-  public function enviarLogin()
+  private function iniciarSesion($email, $password)
   {
-    $datos = (object) [
-      'email' => trim($_POST['email'] ?? ''),
-      'password' => trim($_POST['password'] ?? '')
-    ];
+    $user = $this->model->login($email);
 
-    $errores = (object) [];
-
-    if(empty($datos->email)){
-      $errores->email = "Requiere un email valido";      
-    }
-
-    if (empty($datos->pass)) {
-      $errores->password = "Requiere una contraseña para iniciar sesión";
-    }
-
-    if (!empty((array) $errores)) {
-      $this->view->mostrarLogin($datos, $errores);
-      return;
-    }
-
-    $user = $this->model->login($datos->email);
-
-    if ($user && password_verify($datos->password, $user->password)) {
+    if ($user && password_verify($password, $user->pass)) {
       $_SESSION['IS_LOGGED'] = true;
       $_SESSION['ID_USER'] = $user->id;
       $_SESSION['USER'] = $user->nombre;
@@ -55,14 +35,39 @@ class AuthController extends Controller
     }
   }
 
+  public function enviarLogin()
+  {
+    $datos = (object) [
+      'email' => trim($_POST['email'] ?? ''),
+      'password' => trim($_POST['password'] ?? '')
+    ];
+
+    $errores = (object) [];
+
+    if (empty($datos->email)) {
+      $errores->email = "Requiere un email valido";
+    }
+
+    if (empty($datos->password)) {
+      $errores->password = "Requiere una contraseña para iniciar sesión";
+    }
+
+    if (!empty((array) $errores)) {
+      $this->view->mostrarLogin($datos, $errores);
+      return;
+    }
+
+    $this->iniciarSesion($datos->email, $datos->password);
+  }
+
   public function enviarRegistro()
   {
     $datos = (object) [
 
-      'nombre' =>  trim($_POST['nombre'] ?? ''),
-      'email' =>  trim($_POST['email'] ?? ''),
-      'pass' =>  trim($_POST['password'] ?? ''),
-      'cargo' =>  trim($_POST['cargo'] ?? '')
+      'nombre' => trim($_POST['nombre'] ?? ''),
+      'email' => trim($_POST['email'] ?? ''),
+      'pass' => trim($_POST['password'] ?? ''),
+      'cargo' => trim($_POST['cargo'] ?? '')
     ];
 
     $errores = (object) [];
@@ -87,7 +92,7 @@ class AuthController extends Controller
     $user = $this->model->registrarse($datos->nombre, $datos->email, $datos->pass, $datos->cargo);
 
     if (!empty($user)) {
-      $this->enviarLogin();
+      $this->iniciarSesion($datos->email, $datos->password);
     }
   }
 
