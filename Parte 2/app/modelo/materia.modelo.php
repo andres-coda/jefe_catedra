@@ -25,9 +25,7 @@ class MateriaModelo extends Modelo
 
     try {
       $sentencia = $this->getPdo()->prepare('
-          INSERT INTO materia (nombre) 
-          VALUES (?)
-          RETURNING *
+         SELECT * FROM materia WHERE nombre = ?
         ');
       $sentencia->execute([$nombre]);
 

@@ -60,8 +60,7 @@ class AreaModelo extends Modelo
 
     try {
       $sentencia = $this->getPdo()->prepare('
-          INSERT INTO area (nombre) VALUES (?)
-          RETURNING *
+         SELECT * FROM area WHERE nombre = ?
         ');
       $sentencia->execute([$nombreArea]);
 
