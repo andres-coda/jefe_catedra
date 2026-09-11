@@ -29,7 +29,7 @@ class EscuelaView extends View
   public function mostrarEscuelas($escuelas){
     $card = './app/template/escuela.card.phtml';
     $nuevaEscuela = BASE_URL . 'escuela/nueva';
-    $this->mostrarElementos($escuelas, $card, $nuevaEscuela);
+    $this->mostrarElementos($escuelas, $card, $nuevaEscuela, 'Escuelas');
   }
 }
 

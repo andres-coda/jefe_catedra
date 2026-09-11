@@ -34,7 +34,7 @@ class CursoEscuelaModelo extends Modelo
 
       return $curso;
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
     }
   }
 
@@ -42,28 +42,33 @@ class CursoEscuelaModelo extends Modelo
   {
     try {
       $sentencia = $this->getPdo()->prepare('
-          SELECT * FROM vw_curso_completo 
-          WHERE id_curso_escuela = ?
+          SELECT DISTINCT ON (c.nombre) ce.id, ce.id_escuela, ce.id_curso, c.nombre
+            from curso_escuela ce
+            join curso c ON c.id = ce.id_curso
+            where id_escuela = ?
+            ORDER BY c.nombre
         ');
       $sentencia->execute([$id]);
-      $curso = $sentencia->fetch(PDO::FETCH_OBJ);
+      $curso = $sentencia->fetchAll(PDO::FETCH_OBJ);
       return $curso;
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
     }
   }
 
-  public function obtenerMateriaPorNombre($nombre)
+  public function obtenerCursoNormalEscuelaPorId($id)
   {
-    $sentencia = $this->getPdo()->prepare('
-        SELECT *
-        FROM materia
-        WHERE nombre = ?
-    ');
-
-    $sentencia->execute([$nombre]);
-
-    return $sentencia->fetch(PDO::FETCH_OBJ);
+    try {
+      $sentencia = $this->getPdo()->prepare('
+          SELECT * FROM vw_curso
+          WHERE id_escuela = ?
+        ');
+      $sentencia->execute([$id]);
+      $curso = $sentencia->fetchAll(PDO::FETCH_OBJ);
+      return $curso;
+    } catch (\Throwable $th) {
+      die($th->getMessage());
+    }
   }
 
   public function insertarCursoEscuela($id_escuela, $id_curso, $id_materia, $carga_horaria, $anio)
@@ -81,7 +86,7 @@ class CursoEscuelaModelo extends Modelo
 
       return $curso_escuela;
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
     }
   }
 

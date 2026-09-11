@@ -33,7 +33,7 @@ class MateriaModelo extends Modelo
 
       return $materia;
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
     }
   }
 
@@ -61,10 +61,14 @@ class MateriaModelo extends Modelo
   {
     try {
       $sentencia = $this->getPdo()->prepare('
-          SELECT ce.*, e.nombre AS escuela, c.nombre AS curso, m.nombre AS materia, a.nombre AS area 
+          SELECT DISTINCT ON (ce.id_materia)
+            ce.id_materia,
+            ce.id_escuela,
+            ce.id,
+            m.nombre AS materia,
+            a.nombre AS area,
+            a.id AS id_area
           FROM curso_escuela ce
-          JOIN escuela e ON e.id = ce.id_escuela
-          JOIN curso c ON c.id = ce.id_curso
           JOIN materia m ON m.id = ce.id_materia
           JOIN area a ON a.id = m.id_area
           WHERE ce.id_escuela = ?
@@ -91,7 +95,7 @@ class MateriaModelo extends Modelo
       return $materia;
 
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
     }
   }
 

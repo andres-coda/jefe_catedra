@@ -1,11 +1,14 @@
 <div class="conteiner">
+  <?php if (!empty($titulo)) { ?>
+    <h1><?= $titulo ?></h1>
+  <?php } ?>
   <div class="centro">
     <?php foreach ($datos as $dato) {
       require $card;
     } ?>
 
   </div>
-  <?php if(!empty($nuevoElemento)){ ?>
+  <?php if (!empty($nuevoElemento)) { ?>
     <a class="flotante" href="<?= $nuevoElemento ?>">+</a>
-    <?php } ?>
+  <?php } ?>
 </div>

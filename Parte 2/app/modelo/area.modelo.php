@@ -4,14 +4,24 @@ require_once('app/modelo/modelo.php');
 class AreaModelo extends Modelo
 {
 
-  public function obtenerAreas()
+  public function obtenerAreasPorIdEscuela($idEscuela)
   {
     try {
 
       $sentencia = $this->getPdo()->prepare('
-          SELECT * FROM area ORDER BY nombre
+          SELECT DISTINCT ON (a.nombre)
+            ce.id_materia,
+            ce.id_escuela,
+            ce.id,
+            a.nombre AS area,
+            a.id AS id_area
+          FROM curso_escuela ce
+          JOIN materia m ON m.id = ce.id_materia
+          JOIN area a ON a.id = m.id_area
+          WHERE ce.id_escuela = ?
+          ORDER BY a.nombre
         ');
-      $sentencia->execute();
+      $sentencia->execute([$idEscuela]);
       $areas = $sentencia->fetchAll(PDO::FETCH_OBJ);
 
       return $areas;
@@ -25,9 +35,8 @@ class AreaModelo extends Modelo
 
     try {
       $sentencia = $this->getPdo()->prepare('
-          INSERT INTO area (nombre) 
-          VALUES (?)
-          RETURNING *
+         SELECT * FROM area
+         WHERE nombre = ?
         ');
       $sentencia->execute([$nombre]);
 
@@ -35,7 +44,24 @@ class AreaModelo extends Modelo
 
       return $area;
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
+    }
+  }
+
+
+  public function obtenerMateriasPorNombreArea($nombre)
+  {
+    try {
+      $sentencia = $this->getPdo()->prepare('
+      SELECT a.nombre AS area, a.id, m.nombre AS materia, m.id AS id_materia, m.id_area FROM area a
+      RIGHT JOIN materia m ON m.id_area = a.id
+      WHERE a.nombre = ?
+      ');
+      $sentencia->execute([$nombre]);      
+      $area = $sentencia->fetchAll(PDO::FETCH_OBJ);      
+      return $area;
+    } catch (\Throwable $th) {
+      die($th->getMessage());
     }
   }
 
@@ -60,7 +86,9 @@ class AreaModelo extends Modelo
 
     try {
       $sentencia = $this->getPdo()->prepare('
-         SELECT * FROM area WHERE nombre = ?
+          INSERT INTO area (nombre) 
+          VALUES (?)
+          RETURNING *
         ');
       $sentencia->execute([$nombreArea]);
 
@@ -68,7 +96,7 @@ class AreaModelo extends Modelo
 
       return $area;
     } catch (\Throwable $th) {
-      return false;
+      die($th->getMessage());
     }
   }
 

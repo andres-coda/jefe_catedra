@@ -29,8 +29,9 @@ class Modelo
 
     try {
       $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$database", $user, $password);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (\Throwable $th) {
-      die($th);
+    die($th->getMessage());
     }
 
     return $pdo;

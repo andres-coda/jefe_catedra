@@ -60,7 +60,7 @@ class MateriaController extends Controller
     $area = $this->areaModelo->obtenerAreaPorNombre($datos->area);
 
     if (empty($area)) {
-      $area = $this->areaModelo->insertarArea($datos->nombre);
+      $area = $this->areaModelo->insertarArea($datos->area);
     }
 
     $materiaXnombre = $this->model->insertarMateria($datos->nombre, $area->id);

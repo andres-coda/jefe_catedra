@@ -2,11 +2,12 @@
 require_once('app/vista/view.php');
 class CursoEscuelaView extends View
 {
-  public function crearCurso($datos = null, $err = null)
+  public function crearCurso($idEscuela, $datos = null, $err = null, $nombreArea = null)
   {
+    var_dump($nombreArea);
     $formulario = (object) [
       'titulo' => 'Crear curso',
-      'accion' => 'curso/crearCurso',
+      'accion' => 'crearCurso',
       'borrar' => 'Limpiar',
       'aceptar' => 'Crear Curso',
 
@@ -18,6 +19,14 @@ class CursoEscuelaView extends View
           'requerido' => true,
           'valor' => $datos->nombre ?? '',
           'error' => $err->nombre ?? null
+        ],
+        (object) [
+          'id' => 'area',
+          'label' => 'Nombre del area',
+          'tipo' => 'text',
+          'requerido' => true,
+          'valor' => $datos->area ?? ($nombreArea ? urldecode($nombreArea) : ''),
+          'error' => $err->area ?? null
         ],
         (object) [
           'id' => 'materia',
@@ -49,10 +58,9 @@ class CursoEscuelaView extends View
     $this->maquetaFormulario($formulario);
   }
 
-  public function mostrarCursos($cursos)
+  public function mostrarCursos($nuevoCurso, $cursos)
   {
     $card = './app/template/curso.card.phtml';
-    $nuevoCurso = BASE_URL . 'curso/nuevo';
-    $this->mostrarElementos($cursos, $card, $nuevoCurso);
+    $this->mostrarElementos($cursos, $card, $nuevoCurso, 'Cursos');
   }
 }

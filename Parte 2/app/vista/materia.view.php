@@ -6,7 +6,7 @@ class MateriaView extends View
   {
     $formulario = (object) [
       'titulo' => 'Crear materia',
-      'accion' => 'materia/crearMateria',
+      'accion' => 'crearMateria',
       'borrar' => 'Limpiar',
       'aceptar' => 'Crear Materia',
 
@@ -37,6 +37,6 @@ class MateriaView extends View
   {
     $card = './app/template/materia.card.phtml';
     $nuevoMateria = BASE_URL . 'materia/nuevo';
-    $this->mostrarElementos($materias, $card, $nuevoMateria);
+    $this->mostrarElementos($materias, $card, $nuevoMateria, 'Materias');
   }
 }
