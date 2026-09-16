@@ -7,6 +7,10 @@ $configuracion['usuario'] = 'app_role';
 $configuracion['password'] = 'root';
 $configuracion['basenombre'] = 'jefe_catedra';
 $configuracion['puerto'] = '5432';
+
+// URL base de la app (usada en redirects generados por el front controller).
+// Dejarla vacía usa URLs relativas; setearla absoluta (ej. https://dominio/) si
+// la app vive en un subdirectorio o con dominio propio.
 $configuracion['base_url'] = '';
 
 /* 
