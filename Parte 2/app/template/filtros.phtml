@@ -1,0 +1,26 @@
+<form class="filtros" method="get" action="<?= App\Core\Http::url($filtroAction) ?>">
+  <?php if ($dias !== []): ?>
+    <label>Día
+      <select name="dia">
+        <option value="">Todos</option>
+        <?php foreach ($dias as $dia): ?>
+          <option value="<?= App\Core\View::e($dia['id']) ?>"<?= $filtro['dia'] === $dia['id'] ? ' selected' : '' ?>><?= App\Core\View::e($dia['nombre']) ?></option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+  <?php endif; ?>
+  <label>Hora
+    <input type="time" name="hora" value="<?= App\Core\View::e((string) ($filtro['hora'] ?? '')) ?>">
+  </label>
+  <?php if ($esStaff && $profesores !== []): ?>
+    <label>Profesor
+      <select name="profesor">
+        <option value="">Todos</option>
+        <?php foreach ($profesores as $profesor): ?>
+          <option value="<?= App\Core\View::e($profesor['id']) ?>"<?= $filtro['profesor'] === $profesor['id'] ? ' selected' : '' ?>><?= App\Core\View::e($profesor['nombre']) ?></option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+  <?php endif; ?>
+  <button type="submit">Filtrar</button>
+</form>

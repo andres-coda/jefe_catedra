@@ -1,0 +1,10 @@
+<?php require __DIR__ . '/filtros.phtml'; ?>
+<?php if ($cursos === []): ?>
+  <p>No hay cursos que coincidan con los filtros.</p>
+<?php else: ?>
+  <div class="tarjetas">
+    <?php foreach ($cursos as $curso): ?>
+      <?php $schoolId = (string) $escuela['id']; require __DIR__ . '/card-curso.phtml'; ?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>

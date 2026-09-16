@@ -1,0 +1,10 @@
+<article class="tarjeta">
+  <h2><?= App\Core\View::e($curso['curso']) ?></h2>
+  <p class="detalle">
+    <?= App\Core\View::e($curso['materia']) ?><?php if (($curso['area'] ?? '') !== ''): ?> · <?= App\Core\View::e((string) $curso['area']) ?><?php endif; ?>
+  </p>
+  <p class="detalle">
+    Año <?= App\Core\View::e((string) $curso['anio']) ?> · Carga horaria: <?= App\Core\View::e((string) $curso['carga_horaria']) ?> h
+  </p>
+  <a class="boton" href="<?= App\Core\Http::url('escuelas/' . $schoolId . '/cursos/' . $curso['id']) ?>">Ver curso</a>
+</article>

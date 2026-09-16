@@ -1,0 +1,16 @@
+<?php require __DIR__ . '/filtros.phtml'; ?>
+<?php if ($materias === []): ?>
+  <p>No hay materias que coincidan con los filtros.</p>
+<?php else: ?>
+  <?php foreach ($materias as $materia): ?>
+    <section class="bloque-area">
+      <h2><?= App\Core\View::e($materia['materia']) ?></h2>
+      <p class="detalle"><?= App\Core\View::e($materia['area']) ?></p>
+      <div class="tarjetas">
+        <?php foreach ($materia['cursos'] as $curso): ?>
+          <?php $schoolId = (string) $escuela['id']; require __DIR__ . '/card-curso.phtml'; ?>
+        <?php endforeach; ?>
+      </div>
+    </section>
+  <?php endforeach; ?>
+<?php endif; ?>

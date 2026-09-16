@@ -32,8 +32,13 @@ if (is_file($autoload)) {
 // --- Configuración ------------------------------------------------------------
 require __DIR__ . '/config/claves.php';
 
+use App\Controllers\AreaController;
 use App\Controllers\AuthController;
+use App\Controllers\CursoController;
+use App\Controllers\EscuelaController;
 use App\Controllers\EscuelaUsuarioController;
+use App\Controllers\HomeController;
+use App\Controllers\MateriaController;
 use App\Controllers\PerfilController;
 use App\Core\AuthMiddleware;
 use App\Core\Http;
@@ -52,6 +57,11 @@ Session::start();
 $auth = new AuthController();
 $perfil = new PerfilController();
 $usuariosEscuela = new EscuelaUsuarioController();
+$home = new HomeController();
+$escuelas = new EscuelaController();
+$cursos = new CursoController();
+$areas = new AreaController();
+$materias = new MateriaController();
 
 // Cadena de middlewares global (diseño D3): Session → Auth → SchoolContext.
 $router = new Router([
@@ -90,6 +100,25 @@ $router->post('/escuelas/{id}/usuarios', function (Request $r) use ($usuariosEsc
     PermissionMiddleware::assert('directivo', 'escuela_usuarios.assign', $r);
     return $usuariosEscuela->asignar($r);
 });
+
+// -----------------------------------------------------------------------------
+// Registro de rutas (PR3 — Navegación de escuelas/cursos/áreas/materias):
+//   Públicas:  GET / (home), GET /escuelas, GET /escuelas/{id} y las vistas
+//              cursos/áreas/materias + ficha de curso (catálogo abierto).
+//   Con sesión: POST /vista-config (preferencia de vista) y POST
+//              /escuelas/{id}/favorito (toggle de favorita).
+// -----------------------------------------------------------------------------
+
+$router->get('/', fn (Request $r): Response => $home->home($r));
+$router->get('/escuelas', fn (Request $r): Response => $escuelas->index($r));
+$router->get('/escuelas/{id}', fn (Request $r): Response => $escuelas->show($r));
+$router->get('/escuelas/{id}/cursos', fn (Request $r): Response => $cursos->index($r));
+$router->get('/escuelas/{id}/areas', fn (Request $r): Response => $areas->index($r));
+$router->get('/escuelas/{id}/materias', fn (Request $r): Response => $materias->index($r));
+$router->get('/escuelas/{id}/cursos/{courseId}', fn (Request $r): Response => $cursos->show($r));
+
+$router->post('/vista-config', fn (Request $r): Response => $home->vistaConfig($r));
+$router->post('/escuelas/{id}/favorito', fn (Request $r): Response => $escuelas->favorito($r));
 
 try {
     $response = $router->dispatch(Request::fromGlobals());

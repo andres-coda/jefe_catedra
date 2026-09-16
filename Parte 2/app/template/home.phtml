@@ -1,0 +1,16 @@
+<section>
+  <h1><?= $logueado ? 'Mis escuelas favoritas' : 'Escuelas' ?></h1>
+  <?php if ($logueado): ?>
+    <p class="ayuda">Estas son las escuelas que marcaste como favoritas. <a href="<?= App\Core\Http::url('escuelas') ?>">Ver todas las escuelas</a>.</p>
+  <?php endif; ?>
+  <?php if ($escuelas === []): ?>
+    <p><?= $logueado ? 'Todavía no marcaste escuelas favoritas.' : 'No hay escuelas para mostrar.' ?></p>
+  <?php else: ?>
+    <div class="tarjetas">
+      <?php foreach ($escuelas as $escuela): ?>
+        <?php $esFavorita = true; require __DIR__ . '/card-escuela.phtml'; ?>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+  <?php require __DIR__ . '/paginador.phtml'; ?>
+</section>

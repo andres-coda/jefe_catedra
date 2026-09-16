@@ -1,0 +1,34 @@
+<section>
+  <h1><?= App\Core\View::e($escuela['nombre']) ?></h1>
+  <p class="detalle">
+    <?= App\Core\View::e($escuela['sigla']) ?> N.º <?= App\Core\View::e((string) $escuela['numero']) ?><?php if (($escuela['anexo'] ?? '') !== ''): ?> · Anexo <?= App\Core\View::e((string) $escuela['anexo']) ?><?php endif; ?>
+    · <?= App\Core\View::e($escuela['localidad']) ?><?php if (($escuela['distrito'] ?? '') !== ''): ?> — <?= App\Core\View::e((string) $escuela['distrito']) ?><?php endif; ?>
+  </p>
+  <?php if (($escuela['direccion'] ?? '') !== ''): ?>
+    <p class="detalle"><?= App\Core\View::e((string) $escuela['direccion']) ?></p>
+  <?php endif; ?>
+  <?php if ($logueado): ?>
+    <form method="post" action="<?= App\Core\Http::url('escuelas/' . $escuela['id'] . '/favorito') ?>" class="en-linea">
+      <input type="hidden" name="retorno" value="<?= App\Core\View::e('escuelas/' . $escuela['id']) ?>">
+      <button type="submit"><?= $esFavorita ? 'Quitar de favoritas' : 'Agregar a favoritas' ?></button>
+    </form>
+    <nav class="vistas">
+      <form method="post" action="<?= App\Core\Http::url('vista-config') ?>" class="en-linea">
+        <input type="hidden" name="vista" value="cursos">
+        <input type="hidden" name="retorno" value="<?= App\Core\View::e('escuelas/' . $escuela['id']) ?>">
+        <button type="submit"<?= $vista === 'cursos' ? ' class="activo"' : '' ?>>Vista cursos</button>
+      </form>
+      <form method="post" action="<?= App\Core\Http::url('vista-config') ?>" class="en-linea">
+        <input type="hidden" name="vista" value="areas">
+        <input type="hidden" name="retorno" value="<?= App\Core\View::e('escuelas/' . $escuela['id']) ?>">
+        <button type="submit"<?= $vista === 'areas' ? ' class="activo"' : '' ?>>Vista áreas</button>
+      </form>
+      <a href="<?= App\Core\Http::url('escuelas/' . $escuela['id'] . '/materias') ?>">Materias</a>
+    </nav>
+  <?php endif; ?>
+  <?php if ($vista === 'areas'): ?>
+    <?php require __DIR__ . '/areas.phtml'; ?>
+  <?php else: ?>
+    <?php require __DIR__ . '/cursos.phtml'; ?>
+  <?php endif; ?>
+</section>

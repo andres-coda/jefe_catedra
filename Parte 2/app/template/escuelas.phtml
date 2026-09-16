@@ -1,0 +1,13 @@
+<section>
+  <h1>Escuelas</h1>
+  <?php if ($escuelas === []): ?>
+    <p>No hay escuelas para mostrar.</p>
+  <?php else: ?>
+    <div class="tarjetas">
+      <?php foreach ($escuelas as $escuela): ?>
+        <?php $esFavorita = false; require __DIR__ . '/card-escuela.phtml'; ?>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+  <?php require __DIR__ . '/paginador.phtml'; ?>
+</section>
