@@ -1,0 +1,13 @@
+<section class="formulario">
+  <h1>Iniciar sesión</h1>
+  <form method="post" action="<?= App\Core\Http::url('login') ?>">
+    <label>Email
+      <input type="email" name="email" required autofocus>
+    </label>
+    <label>Contraseña
+      <input type="password" name="pass" required>
+    </label>
+    <button type="submit">Entrar</button>
+  </form>
+  <p>¿No tienes cuenta? <a href="<?= App\Core\Http::url('registro') ?>">Regístrate</a></p>
+</section>

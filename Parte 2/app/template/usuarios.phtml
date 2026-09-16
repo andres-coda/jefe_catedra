@@ -1,0 +1,37 @@
+<section>
+  <h1>Usuarios de la escuela</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($usuarios as $u): ?>
+      <tr>
+        <td><?= App\Core\View::e($u['nombre']) ?></td>
+        <td><?= App\Core\View::e($u['email']) ?></td>
+        <td><?= App\Core\View::e($u['rol']) ?></td>
+      </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+
+  <h2>Asignar rol por email</h2>
+  <form method="post" action="<?= App\Core\Http::url('escuelas/' . $schoolId . '/usuarios') ?>" class="formulario">
+    <label>Email del usuario registrado
+      <input type="email" name="email" required>
+    </label>
+    <label>Rol
+      <select name="rol">
+        <option value="directivo">Directivo</option>
+        <option value="jefe">Jefe</option>
+        <option value="user">Usuario</option>
+      </select>
+    </label>
+    <button type="submit">Asignar</button>
+  </form>
+</section>

@@ -1,0 +1,19 @@
+<section class="formulario">
+  <h1>Mi perfil</h1>
+  <form method="post" action="<?= App\Core\Http::url('perfil') ?>">
+    <label>Nombre
+      <input type="text" name="nombre" value="<?= App\Core\View::e($usuario['nombre']) ?>" required>
+    </label>
+    <label>Email
+      <input type="email" name="email" value="<?= App\Core\View::e($usuario['email']) ?>" required>
+    </label>
+    <hr>
+    <label>Contraseña actual (necesaria solo para cambiarla)
+      <input type="password" name="pass_actual" autocomplete="current-password">
+    </label>
+    <label>Contraseña nueva (dejar vacía para no cambiarla)
+      <input type="password" name="pass" minlength="6" autocomplete="new-password">
+    </label>
+    <button type="submit">Guardar cambios</button>
+  </form>
+</section>

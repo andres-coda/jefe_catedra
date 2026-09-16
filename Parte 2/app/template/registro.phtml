@@ -1,0 +1,15 @@
+<section class="formulario">
+  <h1>Registrarse</h1>
+  <form method="post" action="<?= App\Core\Http::url('registro') ?>">
+    <label>Nombre
+      <input type="text" name="nombre" required autofocus>
+    </label>
+    <label>Email
+      <input type="email" name="email" required>
+    </label>
+    <label>Contraseña (mínimo 6 caracteres)
+      <input type="password" name="pass" minlength="6" required>
+    </label>
+    <button type="submit">Crear cuenta</button>
+  </form>
+</section>
