@@ -182,6 +182,38 @@ final class CursoEscuela
     }
 
     /**
+     * Crea una oferta curso+materia en una escuela y devuelve la fila.
+     *
+     * @throws \RuntimeException si la combinación (escuela, curso, materia, anio)
+     *                           ya existe (message 'curso_escuela_duplicada')
+     *
+     * @return array<string, mixed>
+     */
+    public static function create(string $escuelaId, string $cursoId, string $materiaId, ?float $cargaHoraria, ?int $anio): array
+    {
+        try {
+            $statement = Database::getConnection()->prepare(
+                'INSERT INTO ' . self::TABLE . ' (id_escuela, id_curso, id_materia, carga_horaria, anio)'
+                . ' VALUES (?, ?, ?, ?, ?)'
+                . ' RETURNING id, id_escuela, id_curso, id_materia, carga_horaria, anio'
+            );
+            $statement->execute([$escuelaId, $cursoId, $materiaId, $cargaHoraria, $anio]);
+        } catch (\PDOException $exception) {
+            if ($exception->getCode() === '23505') { // unique_violation (uq_ce_materia)
+                throw new \RuntimeException('curso_escuela_duplicada');
+            }
+            throw $exception;
+        }
+
+        $row = $statement->fetch();
+        if ($row === false) {
+            throw new \RuntimeException('No se pudo recuperar el curso dictado creado.');
+        }
+
+        return $row;
+    }
+
+    /**
      * Filtros de navegación (por el momento solo soporta query) que no
      * pretenden validar la existencia de los valores: el SQL los resuelve.
      * Se mantiene aquí para evitar duplicar la extracción en cada controlador.

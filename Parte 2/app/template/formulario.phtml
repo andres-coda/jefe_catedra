@@ -1,15 +1,22 @@
+<?php
+/** @var object $formulario Contrato: titulo, accion, datos, extra, borrar, aceptar. */
+?>
 <div class="conteiner">
-  <h1> <?= $formulario->titulo ?> </h1>
-  <form method="post" action="<?= $formulario->accion ?>">
+  <h1><?= App\Core\View::e($formulario->titulo) ?></h1>
+  <form method="post" action="<?= App\Core\View::e($formulario->accion) ?>">
 
     <?php foreach ($formulario->datos as $dato) {
-        require './app/template/input.phtml';
+        require __DIR__ . '/input.phtml';
+    } ?>
+
+    <?php if (!empty($formulario->extra)) {
+        echo $formulario->extra;
     } ?>
 
   <div class="botonera">
 
-    <button type="reset"><?= $formulario->borrar ?? 'recetear formulario' ?></button>
-    <button type="submit"><?= $formulario->aceptar ?? 'aceptar' ?></button>
+    <button type="reset"><?= App\Core\View::e($formulario->borrar ?? 'recetear formulario') ?></button>
+    <button type="submit"><?= App\Core\View::e($formulario->aceptar ?? 'aceptar') ?></button>
   </div>
 
   </form>

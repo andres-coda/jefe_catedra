@@ -1,0 +1,119 @@
+<?php
+/**
+ * Alta de escuela (formularios-autocomplete, WU2): compone el contrato
+ * `$formulario` (D4) — titulo/accion/datos/extra/borrar/aceptar — y delega
+ * el render en formulario.phtml.
+ *
+ * @var array<string, string> $datos    Valores enviados (re-render REQ-12).
+ * @var array<string, string> $errores  Errores de validación por campo.
+ * @var array<int, array{id: string, nombre: string}> $turnos        Chips de turno.
+ * @var array<int, array{id: string, nombre: string}> $orientaciones Chips de orientación.
+ * @var string $turnoNuevoValor        Valor del input de turno tras un error.
+ * @var string $orientacionNuevoValor  Valor del input de orientación tras un error.
+ */
+
+$datos = $datos ?? [];
+$errores = $errores ?? [];
+$turnos = $turnos ?? [];
+$orientaciones = $orientaciones ?? [];
+$turnoNuevoValor = $turnoNuevoValor ?? '';
+$orientacionNuevoValor = $orientacionNuevoValor ?? '';
+
+/**
+ * Definición de campos: id => [tipo, label, requerido]. Los límites de
+ * validación viven en EscuelaController::validarDatos (replican schema.sql).
+ *
+ * @var array<string, array{0: string, 1: string, 2: bool}> $campos
+ */
+$campos = [
+    'nombre' => ['text', 'Nombre', true],
+    'numero' => ['text', 'Número', true],
+    'region' => ['text', 'Región', true],
+    'sigla' => ['text', 'Sigla', false],
+    'anexo' => ['text', 'Anexo', false],
+    'sector' => ['text', 'Sector', false],
+    'distrito' => ['text', 'Distrito', true],
+    'localidad' => ['text', 'Localidad', true],
+    'direccion' => ['text', 'Dirección', true],
+    'codigo_postal' => ['text', 'Código postal', true],
+    'telefono' => ['text', 'Teléfono', false],
+    'email' => ['email', 'Email', false],
+];
+
+$objetoDato = static function (string $id, string $tipo, string $label, bool $requerido) use ($datos, $errores): object {
+    return (object) [
+        'id' => $id,
+        'tipo' => $tipo,
+        'valor' => $datos[$id] ?? '',
+        'label' => $label,
+        'error' => $errores[$id] ?? '',
+        'requerido' => $requerido,
+    ];
+};
+
+$datosFormulario = [];
+foreach ($campos as $id => [$tipo, $label, $requerido]) {
+    $datosFormulario[] = $objetoDato($id, $tipo, $label, $requerido);
+}
+
+// ---------------------------------------------------------------------------
+// Chips de turnos/orientaciones (D5). Sin JS se degradan a texto libre:
+// el input visible envía {recurso}_nombres[] y el servidor decide (REQ-05/S5).
+// ---------------------------------------------------------------------------
+$chipsDe = static function (string $recurso, string $id, string $label, array $pares, string $nuevoValor, string $error, string $ayuda): string {
+    $html = '<div class="inputs-span' . ($error !== '' ? ' is-invalida' : '') . '" key="' . $recurso . '">';
+    $html .= '<span>*</span>';
+    $html .= '<div class="inputs-entero">';
+    $html .= '<input type="text" id="' . $id . '" name="' . $recurso . '_nombres[]" value="' . App\Core\View::e($nuevoValor) . '" placeholder=" " data-autocompletar="' . App\Core\View::e($recurso) . '" data-multiple>';
+    $html .= '<label for="' . $id . '">' . App\Core\View::e($label) . '</label>';
+    $html .= '</div>';
+    $html .= '<div class="chips" data-chips="' . $recurso . '">';
+    foreach ($pares as $par) {
+        $html .= '<span class="chip">' . App\Core\View::e($par['nombre'])
+            . '<input type="hidden" name="' . $recurso . '_ids[]" value="' . App\Core\View::e($par['id']) . '">'
+            . '<input type="hidden" name="' . $recurso . '_nombres[]" value="' . App\Core\View::e($par['nombre']) . '">'
+            . '</span>';
+    }
+    $html .= '</div>';
+    if ($ayuda !== '') {
+        $html .= '<span class="ayuda">' . App\Core\View::e($ayuda) . '</span>';
+    }
+    $html .= '<span>' . App\Core\View::e($error) . '</span>';
+    $html .= '</div>';
+
+    return $html;
+};
+
+$extra = $chipsDe(
+    'turno',
+    'turnos',
+    'Turnos (Mañana, Tarde o Noche)',
+    $turnos,
+    $turnoNuevoValor,
+    $errores['turnos'] ?? '',
+    'Se crean automáticamente si no existen.'
+);
+$extra .= $chipsDe(
+    'orientacion',
+    'orientaciones',
+    'Orientaciones',
+    $orientaciones,
+    $orientacionNuevoValor,
+    $errores['orientaciones'] ?? '',
+    ''
+);
+
+if (($errores['general'] ?? '') !== '') {
+    $extra = '<div class="flash flash-error">' . App\Core\View::e($errores['general']) . '</div>' . $extra;
+}
+
+$formulario = (object) [
+    'titulo' => 'Nueva escuela',
+    'accion' => App\Core\Http::url('escuelas'),
+    'datos' => $datosFormulario,
+    'extra' => $extra,
+    'borrar' => 'Limpiar',
+    'aceptar' => 'Crear escuela',
+];
+?>
+<?php require __DIR__ . '/formulario.phtml'; ?>

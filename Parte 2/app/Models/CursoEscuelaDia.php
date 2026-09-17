@@ -35,4 +35,25 @@ final class CursoEscuelaDia
 
         return $statement->fetchAll();
     }
+
+    /**
+     * Inserta una fila de horario (día + entrada + salida) para un curso.
+     * El PK (id_curso_escuela, id_dia) limita a un horario por día;
+     * el 23505 se reporta como 'dia_duplicado' para mensaje amigable.
+     */
+    public static function create(string $idCursoEscuela, string $idDia, string $horaEntrada, string $horaSalida): void
+    {
+        try {
+            $statement = Database::getConnection()->prepare(
+                'INSERT INTO ' . self::TABLE . ' (id_curso_escuela, id_dia, hora_entrada, hora_salida)'
+                . ' VALUES (?, ?, ?, ?)'
+            );
+            $statement->execute([$idCursoEscuela, $idDia, $horaEntrada, $horaSalida]);
+        } catch (\PDOException $exception) {
+            if ($exception->getCode() === '23505') { // pk_curso_escuela_dia
+                throw new \RuntimeException('dia_duplicado');
+            }
+            throw $exception;
+        }
+    }
 }
