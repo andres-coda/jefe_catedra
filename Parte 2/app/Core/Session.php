@@ -17,11 +17,25 @@ final class Session
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
+
+        // En CLI (tests) no hay cookies ni cabeceras HTTP; session_start() emite
+        // warnings si ya se escribió salida. $_SESSION funciona igual como array plano.
+        if (PHP_SAPI === 'cli') {
+            if (!isset($_SESSION) || !is_array($_SESSION)) {
+                $_SESSION = [];
+            }
+            return;
+        }
+
         if (session_status() === PHP_SESSION_NONE) {
-            session_set_cookie_params([
-                'httponly' => true,
-                'samesite' => 'Lax',
-            ]);
+            // Los parámetros de cookie solo aplican a una respuesta HTTP real;
+            // con salida ya enviada emitirían un warning sin efecto.
+            if (!headers_sent()) {
+                session_set_cookie_params([
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
+            }
             session_start();
         }
     }
