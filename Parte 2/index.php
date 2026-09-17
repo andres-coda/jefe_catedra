@@ -35,6 +35,7 @@ require __DIR__ . '/config/claves.php';
 use App\Controllers\AreaController;
 use App\Controllers\AuthController;
 use App\Controllers\CursoController;
+use App\Controllers\DriveLinkController;
 use App\Controllers\EscuelaController;
 use App\Controllers\EscuelaUsuarioController;
 use App\Controllers\HomeController;
@@ -66,6 +67,7 @@ $areas = new AreaController();
 $materias = new MateriaController();
 $profesores = new ProfesorController();
 $tareas = new TareaController();
+$links = new DriveLinkController();
 
 // Cadena de middlewares global (diseño D3): Session → Auth → SchoolContext.
 $router = new Router([
@@ -174,6 +176,30 @@ $router->post('/escuelas/{id}/cursos/{courseId}/tareas/{tareaId}', function (Req
 $router->post('/escuelas/{id}/cursos/{courseId}/tareas/{tareaId}/realizado', function (Request $r) use ($tareas): Response {
     PermissionMiddleware::assert('jefe', 'tarea.realizado', $r);
     return $tareas->marcar($r);
+});
+
+// -----------------------------------------------------------------------------
+// PR3 — Enlaces de Drive por curso (Jefe/Directivo/Admin de la escuela):
+//   POST /escuelas/{id}/cursos/{courseId}/links
+//   PUT/DELETE .../links/{linkId}; POST .../links/{linkId} (alias, _accion).
+//   La lista se muestra públicamente al ver el curso.
+// -----------------------------------------------------------------------------
+
+$router->post('/escuelas/{id}/cursos/{courseId}/links', function (Request $r) use ($links): Response {
+    PermissionMiddleware::assert('jefe', 'drive_link.create', $r);
+    return $links->crear($r);
+});
+$router->put('/escuelas/{id}/cursos/{courseId}/links/{linkId}', function (Request $r) use ($links): Response {
+    PermissionMiddleware::assert('jefe', 'drive_link.update', $r);
+    return $links->actualizar($r);
+});
+$router->delete('/escuelas/{id}/cursos/{courseId}/links/{linkId}', function (Request $r) use ($links): Response {
+    PermissionMiddleware::assert('jefe', 'drive_link.delete', $r);
+    return $links->eliminar($r);
+});
+$router->post('/escuelas/{id}/cursos/{courseId}/links/{linkId}', function (Request $r) use ($links): Response {
+    PermissionMiddleware::assert('jefe', 'drive_link.update', $r);
+    return $links->desdeFormulario($r);
 });
 
 try {
