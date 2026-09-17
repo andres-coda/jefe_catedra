@@ -11,3 +11,6 @@
   <?php endif; ?>
   <?php require __DIR__ . '/paginador.phtml'; ?>
 </section>
+<?php if (!empty($puedeCrear)): ?>
+  <a class="flotante" href="<?= App\Core\Http::url('escuelas/nueva') ?>" title="Nueva escuela">+</a>
+<?php endif; ?>
