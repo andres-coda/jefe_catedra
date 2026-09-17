@@ -40,6 +40,7 @@ use App\Controllers\EscuelaUsuarioController;
 use App\Controllers\HomeController;
 use App\Controllers\MateriaController;
 use App\Controllers\PerfilController;
+use App\Controllers\ProfesorController;
 use App\Core\AuthMiddleware;
 use App\Core\Http;
 use App\Core\PermissionDeniedException;
@@ -62,6 +63,7 @@ $escuelas = new EscuelaController();
 $cursos = new CursoController();
 $areas = new AreaController();
 $materias = new MateriaController();
+$profesores = new ProfesorController();
 
 // Cadena de middlewares global (diseño D3): Session → Auth → SchoolContext.
 $router = new Router([
@@ -119,6 +121,34 @@ $router->get('/escuelas/{id}/cursos/{courseId}', fn (Request $r): Response => $c
 
 $router->post('/vista-config', fn (Request $r): Response => $home->vistaConfig($r));
 $router->post('/escuelas/{id}/favorito', fn (Request $r): Response => $escuelas->favorito($r));
+
+// -----------------------------------------------------------------------------
+// PR3 — Profesores por curso (Jefe/Directivo/Admin de la escuela):
+//   GET/POST /escuelas/{id}/cursos/{courseId}/profesores
+//   PUT/DELETE .../profesores/{profesorId}; POST .../profesores/{profesorId}
+//   funciona como alias de PUT/DELETE (formularios HTML: campo _accion).
+// -----------------------------------------------------------------------------
+
+$router->get('/escuelas/{id}/cursos/{courseId}/profesores', function (Request $r) use ($profesores): Response {
+    PermissionMiddleware::assert('jefe', 'profesor.list', $r);
+    return $profesores->mostrar($r);
+});
+$router->post('/escuelas/{id}/cursos/{courseId}/profesores', function (Request $r) use ($profesores): Response {
+    PermissionMiddleware::assert('jefe', 'profesor.create', $r);
+    return $profesores->crear($r);
+});
+$router->put('/escuelas/{id}/cursos/{courseId}/profesores/{profesorId}', function (Request $r) use ($profesores): Response {
+    PermissionMiddleware::assert('jefe', 'profesor.update', $r);
+    return $profesores->actualizar($r);
+});
+$router->delete('/escuelas/{id}/cursos/{courseId}/profesores/{profesorId}', function (Request $r) use ($profesores): Response {
+    PermissionMiddleware::assert('jefe', 'profesor.delete', $r);
+    return $profesores->quitar($r);
+});
+$router->post('/escuelas/{id}/cursos/{courseId}/profesores/{profesorId}', function (Request $r) use ($profesores): Response {
+    PermissionMiddleware::assert('jefe', 'profesor.update', $r);
+    return $profesores->desdeFormulario($r);
+});
 
 try {
     $response = $router->dispatch(Request::fromGlobals());

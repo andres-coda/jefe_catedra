@@ -1,0 +1,85 @@
+<section>
+  <h1>Profesores del curso</h1>
+  <p class="detalle">
+    <?= App\Core\View::e($curso['curso']) ?> — <?= App\Core\View::e($curso['materia']) ?>
+    · <?= App\Core\View::e($escuela['nombre']) ?>
+  </p>
+  <p>
+    <a href="<?= App\Core\Http::url('escuelas/' . $schoolId . '/cursos/' . $courseId) ?>">Volver al curso</a>
+  </p>
+
+  <h2>Asignados</h2>
+  <?php if ($asignaciones === []): ?>
+    <p>Sin profesores asignados a este curso.</p>
+  <?php else: ?>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Profesor</th><th>Contacto</th><th>Ingreso</th><th>Cese</th><th>Detalles</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($asignaciones as $asignacion): ?>
+          <tr>
+            <td><?= App\Core\View::e($asignacion['nombre']) ?></td>
+            <td>
+              <?= App\Core\View::e((string) ($asignacion['email'] ?? '')) ?>
+              <?php if (($asignacion['telefono'] ?? '') !== ''): ?><br><?= App\Core\View::e((string) $asignacion['telefono']) ?><?php endif; ?>
+            </td>
+            <td><?= App\Core\View::e((string) $asignacion['fecha_ingreso']) ?></td>
+            <td colspan="3">
+              <form method="post" action="<?= App\Core\Http::url('escuelas/' . $schoolId . '/cursos/' . $courseId . '/profesores/' . $asignacion['id_profesor']) ?>" class="en-linea">
+                <input type="hidden" name="_accion" value="actualizar">
+                <label>Cese
+                  <input type="date" name="fecha_cese" value="<?= App\Core\View::e((string) ($asignacion['fecha_cese'] ?? '')) ?>">
+                </label>
+                <label>Detalles
+                  <input type="text" name="detalles" maxlength="50" value="<?= App\Core\View::e((string) ($asignacion['detalles'] ?? '')) ?>">
+                </label>
+                <button type="submit">Guardar</button>
+              </form>
+              <form method="post" action="<?= App\Core\Http::url('escuelas/' . $schoolId . '/cursos/' . $courseId . '/profesores/' . $asignacion['id_profesor']) ?>" class="en-linea">
+                <input type="hidden" name="_accion" value="quitar">
+                <button type="submit">Quitar</button>
+              </form>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+
+  <h2>Asignar profesor de la escuela</h2>
+  <?php if ($profesoresEscuela === []): ?>
+    <p>La escuela todavía no tiene profesores registrados.</p>
+  <?php else: ?>
+    <form method="post" action="<?= App\Core\Http::url('escuelas/' . $schoolId . '/cursos/' . $courseId . '/profesores') ?>" class="formulario">
+      <label>Profesor
+        <select name="profesor_id" required>
+          <option value="">Seleccionar...</option>
+          <?php foreach ($profesoresEscuela as $profesor): ?>
+            <option value="<?= App\Core\View::e($profesor['id']) ?>"><?= App\Core\View::e($profesor['nombre']) ?><?php if (($profesor['email'] ?? '') !== ''): ?> (<?= App\Core\View::e((string) $profesor['email']) ?>)<?php endif; ?></option>
+          <?php endforeach; ?>
+        </select>
+      </label>
+      <button type="submit">Asignar al curso</button>
+    </form>
+  <?php endif; ?>
+
+  <h2>Registrar profesor nuevo</h2>
+  <form method="post" action="<?= App\Core\Http::url('escuelas/' . $schoolId . '/cursos/' . $courseId . '/profesores') ?>" class="formulario">
+    <label>Nombre
+      <input type="text" name="nombre" maxlength="50" required>
+    </label>
+    <label>Email
+      <input type="email" name="email" maxlength="50">
+    </label>
+    <label>Teléfono
+      <input type="text" name="telefono" maxlength="15">
+    </label>
+    <label>Detalles
+      <input type="text" name="detalles" maxlength="50">
+    </label>
+    <button type="submit">Crear y asignar</button>
+  </form>
+</section>
