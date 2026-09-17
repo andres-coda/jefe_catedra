@@ -34,6 +34,7 @@ require __DIR__ . '/config/claves.php';
 
 use App\Controllers\AreaController;
 use App\Controllers\AuthController;
+use App\Controllers\BuscadorController;
 use App\Controllers\CursoController;
 use App\Controllers\DriveLinkController;
 use App\Controllers\EscuelaController;
@@ -68,6 +69,7 @@ $materias = new MateriaController();
 $profesores = new ProfesorController();
 $tareas = new TareaController();
 $links = new DriveLinkController();
+$buscador = new BuscadorController();
 
 // Cadena de middlewares global (diseño D3): Session → Auth → SchoolContext.
 $router = new Router([
@@ -126,6 +128,15 @@ $router->get('/escuelas/{id}/cursos/{courseId}', fn (Request $r): Response => $c
 
 $router->post('/vista-config', fn (Request $r): Response => $home->vistaConfig($r));
 $router->post('/escuelas/{id}/favorito', fn (Request $r): Response => $escuelas->favorito($r));
+
+// -----------------------------------------------------------------------------
+// Autocompletar (formularios-autocomplete): endpoint JSON público que alimenta
+// el componente de autocompletar. El parámetro {recurso} no termina en "id"
+// (compila como [^/]+) y se valida contra el mapa estático del controlador;
+// cualquier recurso desconocido → 404 (D3, REQ-31).
+// -----------------------------------------------------------------------------
+
+$router->get('/buscador/{recurso}', fn (Request $r): Response => $buscador->buscar($r));
 
 // -----------------------------------------------------------------------------
 // PR3 — Profesores por curso (Jefe/Directivo/Admin de la escuela):
