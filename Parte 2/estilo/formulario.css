@@ -240,3 +240,134 @@ form{
   margin: 0 .2rem;
   font-size: 0.8em;
 }
+
+/* ---------------------------------------------------------------------------
+ * Autocompletar + chips + filas de horario (formularios-autocomplete, WU3).
+ * El dropdown es absoluto dentro de .inputs-entero (position: relative); las
+ * variables de color vienen de estilo.css (--colorBlanco, --colorPrimario…).
+ * ------------------------------------------------------------------------- */
+
+.autocompletar-lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  border: .5px solid var(--colorSombra);
+  border-radius: 5px;
+  background-color: var(--colorBlanco);
+  box-shadow: 0 0.25rem 0.5rem var(--colorSombra);
+  max-height: 13rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.autocompletar-lista.oculta {
+  display: none;
+}
+
+.autocompletar-item {
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  color: var(--colorNegro);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.autocompletar-item.activo,
+.autocompletar-item:hover {
+  background-color: var(--colorPrimario);
+  color: var(--colorBlanco);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 0.35rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--colorCardVerde);
+  color: var(--colorNegro);
+  font-size: 0.85rem;
+}
+
+.chip-x {
+  border: none;
+  background-color: transparent;
+  color: var(--colorNegro);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  opacity: 0.7;
+}
+
+.chip-x:hover {
+  opacity: 1;
+}
+
+.fila-horario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fila-horario select,
+.fila-horario input[type="time"] {
+  font-size: 1rem;
+  background-color: transparent;
+  border-radius: 5px;
+  border: .5px solid var(--colorSombra);
+  color: var(--colorNegro);
+  box-sizing: border-box;
+  height: 36px;
+  padding: 0 0.5rem;
+}
+
+.fila-horario select {
+  flex: 2;
+  min-width: 7rem;
+}
+
+.fila-horario input[type="time"] {
+  flex: 1;
+  min-width: 6rem;
+}
+
+.btn-agregar-fila {
+  align-self: flex-start;
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border: .5px solid var(--colorSombra);
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--colorNegro);
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.btn-agregar-fila:hover {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
