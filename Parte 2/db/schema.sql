@@ -30,6 +30,11 @@
 --   - Nuevo helper fc_es_admin_directivo_jefe_escuela(p_id_escuela): corrige
 --     las policies de profesor, que recibían id_escuela donde el helper
 --     original esperaba id_curso_escuela (denegaba a directivo/jefe).
+--   - fc_autenticar(p_email) es el ÚNICO acceso a `usuario` disponible para el
+--     visitante anónimo. pc_usuario_select exige admin/self/directivo, contexto
+--     que sólo existe DESPUÉS de autenticar, así que el login no podía leer su
+--     propia fila (huevo y gallina). Corre como owner (bypasea RLS) y devuelve
+--     sólo id/nombre/email/pass/rol para un email: no ensancha ninguna policy.
 --
 -- Requiere PostgreSQL 13+ (gen_random_uuid() nativo).
 -- ============================================================================
@@ -700,6 +705,34 @@ begin
     end;
 $$;
 
+-- ----------------------------------------------------------------------------
+-- fc_autenticar(p_email): lectura de credenciales del camino ANÓNIMO
+-- (login y registro). Ver "Modelo de seguridad" en el encabezado.
+-- ----------------------------------------------------------------------------
+-- CORRECCIÓN (P0): pc_usuario_select exige admin/self/directivo, un contexto
+-- que sólo existe DESPUÉS de autenticar. Sin esta función el visitante anónimo
+-- no podía leer la fila del usuario (huevo y gallina): findByEmail() devolvía
+-- NULL siempre, POST /login rechazaba credenciales válidas y POST /registro
+-- fallaba al releer la fila recién insertada.
+-- SECURITY DEFINER: corre como owner (que bypasea RLS) y expone SÓLO las
+-- columnas que la autenticación necesita, para un email dado. No ensancha
+-- ninguna policy: el SELECT anónimo directo sobre usuario sigue denegado.
+-- search_path fijo: patrón recomendado para funciones DEFINER (evita que un
+-- objeto del mismo nombre en otro schema se resuelva dentro de la función).
+create or replace function fc_autenticar(p_email text)
+    returns table (id uuid, nombre varchar, email varchar, pass varchar, rol varchar)
+    stable
+    security definer
+    set search_path = public, pg_temp
+    language sql
+as
+$$
+    SELECT u.id, u.nombre, u.email, u.pass, u.rol
+    FROM usuario u
+    WHERE lower(u.email) = lower(p_email)
+    LIMIT 1;
+$$;
+
 -- ============================================================================
 -- 3) POLICIES
 -- ============================================================================
@@ -1187,6 +1220,11 @@ ALTER TABLE curso_profesor ENABLE ROW LEVEL SECURITY;
 GRANT USAGE ON SCHEMA public TO app_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO app_role;
+
+-- fc_autenticar devuelve el hash de un email dado: se revoca de PUBLIC para
+-- que no quede al alcance de roles ajenos a la app (el owner la conserva).
+REVOKE ALL ON FUNCTION fc_autenticar(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION fc_autenticar(text) TO app_role;
 
 -- Objetos futuros creados por el owner (ej. tests de verificación).
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_role;

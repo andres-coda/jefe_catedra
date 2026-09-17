@@ -21,7 +21,7 @@ final class Usuario
     public static function findById(string $id): ?array
     {
         $statement = Database::getConnection()->prepare(
-            'SELECT id, nombre, email, pass, cargo, rol, creado_en FROM ' . self::TABLE . ' WHERE id = ?'
+            'SELECT id, nombre, email, pass, rol, creado_en FROM ' . self::TABLE . ' WHERE id = ?'
         );
         $statement->execute([$id]);
         $row = $statement->fetch();
@@ -35,9 +35,29 @@ final class Usuario
     public static function findByEmail(string $email): ?array
     {
         $statement = Database::getConnection()->prepare(
-            'SELECT id, nombre, email, pass, cargo, rol, creado_en FROM ' . self::TABLE
+            'SELECT id, nombre, email, pass, rol, creado_en FROM ' . self::TABLE
             . ' WHERE lower(email) = lower(?)'
         );
+        $statement->execute([$email]);
+        $row = $statement->fetch();
+
+        return $row !== false ? $row : null;
+    }
+
+    /**
+     * Credenciales para el camino ANÓNIMO (login y registro).
+     *
+     * pc_usuario_select exige admin/self/directivo: un contexto que sólo existe
+     * después de iniciar sesión, así que un SELECT directo sobre `usuario`
+     * nunca puede ver la fila antes de autenticar (huevo y gallina que rompía
+     * login y registro). fc_autenticar() es SECURITY DEFINER y devuelve sólo las
+     * columnas que la autenticación necesita para un email dado.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function findForAuth(string $email): ?array
+    {
+        $statement = Database::getConnection()->prepare('SELECT * FROM fc_autenticar(?)');
         $statement->execute([$email]);
         $row = $statement->fetch();
 
@@ -69,7 +89,10 @@ final class Usuario
             throw $exception;
         }
 
-        $row = self::findByEmail($email);
+        // Relectura por el camino anónimo: el registro ocurre SIN contexto de
+        // sesión, así que findByEmail() (sujeto a RLS) no vería la fila recién
+        // insertada y el alta fallaba con "No se pudo recuperar el usuario".
+        $row = self::findForAuth($email);
         if ($row === null) {
             throw new \RuntimeException('No se pudo recuperar el usuario creado.');
         }

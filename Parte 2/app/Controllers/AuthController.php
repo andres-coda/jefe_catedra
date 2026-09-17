@@ -30,7 +30,10 @@ final class AuthController
         $email = trim((string) $request->post('email', ''));
         $password = (string) $request->post('pass', '');
 
-        $usuario = Usuario::findByEmail($email);
+        // findForAuth() usa fc_autenticar() (SECURITY DEFINER): el login corre
+        // sin contexto de sesión, así que un SELECT sujeto a RLS no vería la
+        // fila del usuario y todas las credenciales válidas serían rechazadas.
+        $usuario = Usuario::findForAuth($email);
         if ($usuario === null || !Usuario::verifyPassword($password, $usuario['pass'])) {
             Session::flash('error', 'Email o contraseña incorrectos.');
             return Response::redirect(Http::url('login'));
