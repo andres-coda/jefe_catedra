@@ -78,7 +78,8 @@ $router = new Router([
 // -----------------------------------------------------------------------------
 // Registro de rutas (PR2 — Auth + RBAC):
 //   Públicas:   GET/POST /login, /registro; POST /logout.
-//   Protegidas: /perfil (requiere sesión, rol >= user), /escuelas/{id}/usuarios
+//   Protegidas: /perfil (requiere sesión iniciada de cualquier usuario
+//               autenticado, con o sin rol de escuela), /escuelas/{id}/usuarios
 //               (requiere Directivo/Admin de la escuela, rol >= directivo).
 // Los guards por acción se aplican en el closure de cada ruta.
 // -----------------------------------------------------------------------------
@@ -90,11 +91,11 @@ $router->post('/registro', fn (Request $r): Response => $auth->registro($r));
 $router->post('/logout', fn (Request $r): Response => $auth->logout($r));
 
 $router->get('/perfil', function (Request $r) use ($perfil): Response {
-    PermissionMiddleware::assert('user', 'perfil.view', $r);
+    PermissionMiddleware::assertAuthenticated('perfil.view', $r);
     return $perfil->show($r);
 });
 $router->post('/perfil', function (Request $r) use ($perfil): Response {
-    PermissionMiddleware::assert('user', 'perfil.update', $r);
+    PermissionMiddleware::assertAuthenticated('perfil.update', $r);
     return $perfil->update($r);
 });
 

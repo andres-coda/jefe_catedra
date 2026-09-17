@@ -74,4 +74,21 @@ final class PermissionMiddleware extends Middleware
             );
         }
     }
+
+    /**
+     * Authentication guard (no school context required): asserts that
+     * AuthMiddleware resolved a logged-in user ("user" attribute), regardless
+     * of school_role. Used by routes without a {id} in the path (e.g. /perfil),
+     * where SchoolContextMiddleware always leaves school_role null.
+     * Anonymous/anonymous-session visitors -> redirect to login.
+     */
+    public static function assertAuthenticated(string $action, Request $request): void
+    {
+        if ($request->getAttribute('user') === null) {
+            throw new PermissionDeniedException(
+                sprintf('Anonymous user denied for action "%s".', $action),
+                true
+            );
+        }
+    }
 }
