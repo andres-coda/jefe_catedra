@@ -106,10 +106,14 @@ final class CursoEscuela
         }
 
         if (($filtros['profesor'] ?? null) !== null) {
-            $sql .= ' AND EXISTS ('
-                . ' SELECT 1 FROM curso_profesor cp'
-                . ' WHERE cp.id_curso_escuela = ce.id AND cp.id_profesor = ?'
-                . ' AND cp.fecha_cese IS NULL)';
+            // Public read path for the professor filter: curso_profesor is
+            // staff-only RLS (pc_curso_profesor_select), so a direct EXISTS
+            // subquery sees zero rows for anonymous visitors. The SECURITY
+            // DEFINER helper fc_curso_profesor_activo() checks the active
+            // assignment as the table owner and exposes only a boolean for the
+            // given (curso_escuela, profesor) pair — RLS everywhere else stays
+            // intact and no staff-only column is leaked.
+            $sql .= ' AND fc_curso_profesor_activo(ce.id, ?)';
             $params[] = (string) $filtros['profesor'];
         }
 

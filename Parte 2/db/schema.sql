@@ -733,6 +733,34 @@ $$
     LIMIT 1;
 $$;
 
+-- ----------------------------------------------------------------------------
+-- fc_curso_profesor_activo(p_id_curso_escuela, p_id_profesor): lectura del
+-- camino PÚBLICO para el filtro por profesor de la navegación (PR3).
+-- ----------------------------------------------------------------------------
+-- pc_curso_profesor_select exige admin/directivo/jefe del curso: un visitante
+-- que filtra cursos por profesor no veía ninguna asignación (falso "No hay
+-- cursos que coincidan con los filtros"). SECURITY DEFINER: corre como owner
+-- (bypasea RLS) y expone SÓLO un booleano para el par (curso, profesor) dado:
+-- no devuelve filas de curso_profesor y no ensancha ninguna policy (el SELECT
+-- anónimo directo sobre curso_profesor sigue denegado).
+-- search_path fijo: patrón recomendado para funciones DEFINER (ver fc_autenticar).
+create or replace function fc_curso_profesor_activo(p_id_curso_escuela uuid, p_id_profesor uuid)
+    returns boolean
+    stable
+    security definer
+    set search_path = public, pg_temp
+    language sql
+as
+$$
+    SELECT EXISTS (
+        SELECT 1
+        FROM curso_profesor cp
+        WHERE cp.id_curso_escuela = p_id_curso_escuela
+          AND cp.id_profesor = p_id_profesor
+          AND cp.fecha_cese IS NULL
+    );
+$$;
+
 -- ============================================================================
 -- 3) POLICIES
 -- ============================================================================
@@ -1225,6 +1253,12 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO app_role;
 -- que no quede al alcance de roles ajenos a la app (el owner la conserva).
 REVOKE ALL ON FUNCTION fc_autenticar(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION fc_autenticar(text) TO app_role;
+
+-- fc_curso_profesor_activo: mismo criterio (solo la app la ejecuta; la
+-- ejecuta tanto el visitante como los roles autenticados porque la conexión
+-- de la app siempre corre como app_role).
+REVOKE ALL ON FUNCTION fc_curso_profesor_activo(uuid, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION fc_curso_profesor_activo(uuid, uuid) TO app_role;
 
 -- Objetos futuros creados por el owner (ej. tests de verificación).
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_role;
