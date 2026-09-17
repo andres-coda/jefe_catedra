@@ -1,18 +1,23 @@
-<div class='inputs-span' key='<?= $dato->id ?>'>
+<?php
+/** @var object $dato Contrato: id, tipo, valor, label, error, requerido. */
+$datoId = $dato->id;
+$tieneError = !empty($dato->error);
+?>
+<div class='inputs-span<?= $tieneError ? ' is-invalida' : '' ?>' key='<?= $datoId ?>'>
   <span><?= $dato->requerido ? '*' : '' ?></span>
   <div class='inputs-entero'>
-    <input 
-      type="<?= $dato->tipo ?? 'text' ?>"
-      id="<?= $dato->id?>"
-      name="<?= $dato->id?>"
-      value="<?= $dato->valor ?? '' ?>"
+    <input
+      type="<?= View::e($dato->tipo ?? 'text') ?>"
+      id="<?= $datoId ?>"
+      name="<?= $datoId ?>"
+      value="<?= View::e($dato->valor ?? '') ?>"
       placeholder=' '
     >
-    <label 
-      for="<?= $dato->id?>"
+    <label
+      for="<?= $datoId ?>"
     >
-    <?= $dato->label?>
+    <?= View::e($dato->label) ?>
   </label>
   </div>
-  <span><?=$dato->error ?? ''?></span>
+  <span><?= View::e($dato->error ?? '') ?></span>
 </div>
