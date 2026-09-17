@@ -2,8 +2,8 @@
 /** @var object $formulario Contrato: titulo, accion, datos, extra, borrar, aceptar. */
 ?>
 <div class="conteiner">
-  <h1><?= View::e($formulario->titulo) ?></h1>
-  <form method="post" action="<?= View::e($formulario->accion) ?>">
+  <h1><?= App\Core\View::e($formulario->titulo) ?></h1>
+  <form method="post" action="<?= App\Core\View::e($formulario->accion) ?>">
 
     <?php foreach ($formulario->datos as $dato) {
         require __DIR__ . '/input.phtml';
@@ -15,8 +15,8 @@
 
   <div class="botonera">
 
-    <button type="reset"><?= View::e($formulario->borrar ?? 'recetear formulario') ?></button>
-    <button type="submit"><?= View::e($formulario->aceptar ?? 'aceptar') ?></button>
+    <button type="reset"><?= App\Core\View::e($formulario->borrar ?? 'recetear formulario') ?></button>
+    <button type="submit"><?= App\Core\View::e($formulario->aceptar ?? 'aceptar') ?></button>
   </div>
 
   </form>

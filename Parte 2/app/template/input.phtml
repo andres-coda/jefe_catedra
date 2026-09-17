@@ -7,17 +7,17 @@ $tieneError = !empty($dato->error);
   <span><?= $dato->requerido ? '*' : '' ?></span>
   <div class='inputs-entero'>
     <input
-      type="<?= View::e($dato->tipo ?? 'text') ?>"
+      type="<?= App\Core\View::e($dato->tipo ?? 'text') ?>"
       id="<?= $datoId ?>"
       name="<?= $datoId ?>"
-      value="<?= View::e($dato->valor ?? '') ?>"
+      value="<?= App\Core\View::e($dato->valor ?? '') ?>"
       placeholder=' '
     >
     <label
       for="<?= $datoId ?>"
     >
-    <?= View::e($dato->label) ?>
+    <?= App\Core\View::e($dato->label) ?>
   </label>
   </div>
-  <span><?= View::e($dato->error ?? '') ?></span>
+  <span><?= App\Core\View::e($dato->error ?? '') ?></span>
 </div>
