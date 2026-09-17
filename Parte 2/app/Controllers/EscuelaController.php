@@ -80,6 +80,7 @@ final class EscuelaController
             'filtro' => $filtros,
             'profesores' => $esStaff ? Profesor::listByEscuela($schoolId) : [],
             'esStaff' => $esStaff,
+            'puedeCrearCurso' => $this->puedeCrearCurso($request),
             'filtroAction' => 'escuelas/' . $schoolId,
         ];
 
@@ -526,6 +527,19 @@ final class EscuelaController
         return in_array(
             (string) $request->getAttribute('school_role', ''),
             ['jefe', 'directivo', 'admin'],
+            true
+        );
+    }
+
+    /**
+     * true solo para admin global o directivo de la escuela (REQ-21): decide si
+     * se muestra la entrada "Nuevo curso" en el catálogo (WU2b).
+     */
+    private function puedeCrearCurso(Request $request): bool
+    {
+        return in_array(
+            (string) $request->getAttribute('school_role', ''),
+            ['admin', 'directivo'],
             true
         );
     }

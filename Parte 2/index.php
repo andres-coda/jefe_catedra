@@ -146,6 +146,22 @@ $router->post('/escuelas', function (Request $r) use ($escuelas): Response {
 });
 
 // -----------------------------------------------------------------------------
+// Alta de curso dictado (formularios-autocomplete, WU2b): admin o directivo de
+// la escuela del path (REQ-21). "nuevo" es una ruta literal y nunca colisiona
+// con {courseId} (la plantilla exige UUID v4). GET muestra el formulario;
+// POST crea con validación + transacción única (D1, REQ-25..REQ-27).
+// -----------------------------------------------------------------------------
+
+$router->get('/escuelas/{id}/cursos/nuevo', function (Request $r) use ($cursos): Response {
+    PermissionMiddleware::assert('directivo', 'curso_escuela.nuevo', $r);
+    return $cursos->nuevo($r);
+});
+$router->post('/escuelas/{id}/cursos', function (Request $r) use ($cursos): Response {
+    PermissionMiddleware::assert('directivo', 'curso_escuela.create', $r);
+    return $cursos->crear($r);
+});
+
+// -----------------------------------------------------------------------------
 // Autocompletar (formularios-autocomplete): endpoint JSON público que alimenta
 // el componente de autocompletar. El parámetro {recurso} no termina en "id"
 // (compila como [^/]+) y se valida contra el mapa estático del controlador;
