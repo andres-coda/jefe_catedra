@@ -1,8 +1,25 @@
 <body>
   <nav>
     <ul>
-      <li><a href="/escuela">Escuela</a></li>
-      <li><a href="/login">Iniciar sesión</a></li>
-      <li><a href="/registro">Registrarse</a></li>
+      <?php if (App\Core\Session::has('user_id')): ?>
+        <li><a href="<?= App\Core\Http::url('') ?>">Inicio</a></li>
+        <li><a href="<?= App\Core\Http::url('perfil') ?>">Perfil</a></li>
+        <li>
+          <form method="post" action="<?= App\Core\Http::url('logout') ?>" class="inline">
+            <button type="submit">Salir</button>
+          </form>
+        </li>
+      <?php else: ?>
+        <li><a href="<?= App\Core\Http::url('login') ?>">Iniciar sesión</a></li>
+        <li><a href="<?= App\Core\Http::url('registro') ?>">Registrarse</a></li>
+      <?php endif; ?>
     </ul>
   </nav>
+  <?php $flashError = App\Core\Session::flash('error'); ?>
+  <?php if ($flashError !== null): ?>
+    <div class="flash flash-error"><?= App\Core\View::e($flashError) ?></div>
+  <?php endif; ?>
+  <?php $flashOk = App\Core\Session::flash('ok'); ?>
+  <?php if ($flashOk !== null): ?>
+    <div class="flash flash-ok"><?= App\Core\View::e($flashOk) ?></div>
+  <?php endif; ?>
