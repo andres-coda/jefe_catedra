@@ -1,0 +1,17 @@
+<?php $retorno = $retorno ?? '/'; ?>
+<article class="tarjeta">
+  <h2><?= App\Core\View::e($escuela['nombre']) ?></h2>
+  <p class="detalle">
+    <?= App\Core\View::e($escuela['sigla']) ?> N.º <?= App\Core\View::e((string) $escuela['numero']) ?><?php if (($escuela['anexo'] ?? '') !== ''): ?> · Anexo <?= App\Core\View::e((string) $escuela['anexo']) ?><?php endif; ?>
+  </p>
+  <p class="detalle">
+    <?= App\Core\View::e($escuela['localidad']) ?><?php if (($escuela['distrito'] ?? '') !== ''): ?> — <?= App\Core\View::e((string) $escuela['distrito']) ?><?php endif; ?>
+  </p>
+  <a class="boton" href="<?= App\Core\Http::url('escuelas/' . $escuela['id']) ?>">Ver escuela</a>
+  <?php if ($esFavorita): ?>
+    <form method="post" action="<?= App\Core\Http::url('escuelas/' . $escuela['id'] . '/favorito') ?>" class="en-linea">
+      <input type="hidden" name="retorno" value="<?= App\Core\View::e($retorno) ?>">
+      <button type="submit">Quitar de favoritas</button>
+    </form>
+  <?php endif; ?>
+</article>

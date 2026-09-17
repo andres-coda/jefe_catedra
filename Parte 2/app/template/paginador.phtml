@@ -1,0 +1,11 @@
+<?php if ($paginas > 1): ?>
+  <nav class="paginador">
+    <?php if ($page > 1): ?>
+      <a href="<?= App\Core\Http::url($baseUrl) ?>?page=<?= $page - 1 ?>">Anterior</a>
+    <?php endif; ?>
+    <span>Página <?= $page ?> de <?= $paginas ?></span>
+    <?php if ($page < $paginas): ?>
+      <a href="<?= App\Core\Http::url($baseUrl) ?>?page=<?= $page + 1 ?>">Siguiente</a>
+    <?php endif; ?>
+  </nav>
+<?php endif; ?>
