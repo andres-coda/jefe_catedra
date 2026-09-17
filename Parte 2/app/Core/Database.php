@@ -65,6 +65,37 @@ final class Database
         $stmt->execute([(string) $userId]);
     }
 
+    /**
+     * Ejecuta un callable dentro de una transacción cooperativa.
+     *
+     * Si ya existe una transacción activa (nested call, tests con DbCase),
+     * no emite begin/commit/rollback — el callable corre dentro de la
+     * transacción existente y el rollback es responsabilidad del caller externo.
+     *
+     * @template T
+     * @param callable(): T $callable
+     * @return T
+     * @throws \Throwable Propaga cualquier excepción del callable.
+     */
+    public static function transaction(callable $callable)
+    {
+        $pdo = self::getConnection();
+
+        if ($pdo->inTransaction()) {
+            return $callable();
+        }
+
+        $pdo->beginTransaction();
+        try {
+            $result = $callable();
+            $pdo->commit();
+            return $result;
+        } catch (\Throwable $exception) {
+            $pdo->rollBack();
+            throw $exception;
+        }
+    }
+
     private static function config(): array
     {
         global $configuracion;
