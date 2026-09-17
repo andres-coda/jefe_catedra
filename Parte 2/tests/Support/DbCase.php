@@ -7,6 +7,7 @@ namespace Tests\Support;
 use App\Core\Database;
 use App\Core\Session;
 use PDO;
+use PDOException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -194,9 +195,23 @@ abstract class DbCase extends TestCase
 
         // El admin global se promueve en dos pasos: pc_usuario_insert exige
         // rol='user' (literal); el UPDATE pasa por fc_es_admin() (true en la
-        // conexión elevada) y deja rol='admin' de verdad.
-        $pdo->prepare('UPDATE usuario SET rol = ? WHERE id = ?')
-            ->execute(['admin', self::$adminId]);
+        // conexión elevada) y deja rol='admin' de verdad. Si ya existe un
+        // admin real (uq_unico_usuario_admin admite una sola fila), se reusa
+        // su id en lugar de fallar: los tests corren como el admin existente
+        // dentro de una transacción que se revierte, y limpiarFixture nunca
+        // toca esa cuenta (solo borra los usuarios %@p4t.test).
+        try {
+            $pdo->prepare('UPDATE usuario SET rol = ? WHERE id = ?')
+                ->execute(['admin', self::$adminId]);
+        } catch (PDOException $exception) {
+            if ((int) $exception->getCode() !== 23505) {
+                throw $exception;
+            }
+            self::$adminId = (string) self::releer(
+                'SELECT id FROM usuario WHERE rol = ? ORDER BY creado_en LIMIT 1',
+                ['admin']
+            );
+        }
 
         // Pivotes por escuela (jefe exige id_area por chk_area_rol).
         $pdo->prepare('INSERT INTO escuela_usuario (id_escuela, id_usuario, rol, id_area) VALUES (?, ?, ?, ?)')
