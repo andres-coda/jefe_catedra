@@ -1,0 +1,154 @@
+<?php
+/**
+ * Alta de curso dictado (formularios-autocomplete, WU2b): compone el contrato
+ * `$formulario` (D4) — titulo/accion/datos/extra/borrar/aceptar — y delega el
+ * render en formulario.phtml.
+ *
+ * Catálogo área/materia/curso (REQ-22) como autocompletar (D7): el input
+ * visible envía {recurso}_nombre y un hidden id_{recurso}; sin JS se degrada a
+ * texto libre y el servidor decide (mismo patrón que escuela.nueva.phtml).
+ * El hidden va DESPUÉS del label para que el selector CSS `input:focus+label`
+ * (floating label) siga funcionando.
+ *
+ * Horarios (REQ-23/REQ-24, D6) como filas .fila-horario con arrays paralelos
+ * dia[]/hora_entrada[]/hora_salida[]; la primera fila vacía se descarta en el
+ * servidor (leerFilas), así el botón "agregar fila" de WU3 puede dejar una de
+ * más sin romper la validación.
+ *
+ * @var array<string, mixed> $escuela Escuela del path (REQ-21).
+ * @var array<string, string> $datos   Valores enviados (re-render REQ-27).
+ * @var array<string, string> $errores Errores de validación por campo.
+ * @var array<int, array{dia: string, entrada: string, salida: string}> $filas
+ * @var array<int, array{id: string, nombre: string}> $dias Catálogo de días.
+ */
+
+$datos = $datos ?? [];
+$errores = $errores ?? [];
+$filas = $filas ?? [];
+$dias = $dias ?? [];
+$schoolId = (string) $escuela['id'];
+
+/**
+ * Definición de campos simples: id => [tipo, label, requerido]. Los límites de
+ * validación viven en CursoController::validarDatos (replican schema.sql).
+ *
+ * @var array<string, array{0: string, 1: string, 2: bool}> $campos
+ */
+$campos = [
+    'carga_horaria' => ['text', 'Carga horaria (horas)', false],
+    'anio' => ['text', 'Año', false],
+];
+
+$objetoDato = static function (string $id, string $tipo, string $label, bool $requerido) use ($datos, $errores): object {
+    return (object) [
+        'id' => $id,
+        'tipo' => $tipo,
+        'valor' => $datos[$id] ?? '',
+        'label' => $label,
+        'error' => $errores[$id] ?? '',
+        'requerido' => $requerido,
+    ];
+};
+
+$datosFormulario = [];
+foreach ($campos as $id => [$tipo, $label, $requerido]) {
+    $datosFormulario[] = $objetoDato($id, $tipo, $label, $requerido);
+}
+
+// ---------------------------------------------------------------------------
+// Autocompletar de catálogo (D7): input visible {recurso}_nombre + hidden
+// id_{recurso} (DESPUÉS del label, ver cabecera). El servidor re-valida los
+// UUID ocultos (REQ-26/S7); autocompletar guarda el id en el hidden (WU3).
+// ---------------------------------------------------------------------------
+$autocompletarDe = static function (
+    string $recurso,
+    string $label,
+    string $valor,
+    string $idSeleccionado,
+    string $error,
+    bool $requerido,
+    string $areaInput = ''
+) use ($errores): string {
+    $html = '<div class="inputs-span' . (($errores[$recurso] ?? '') !== '' ? ' is-invalida' : '') . '" key="' . $recurso . '">';
+    $html .= '<span>' . ($requerido ? '*' : '') . '</span>';
+    $html .= '<div class="inputs-entero">';
+    $html .= '<input type="text" id="' . $recurso . '_nombre" name="' . $recurso . '_nombre" value="' . App\Core\View::e($valor) . '" placeholder=" " data-autocompletar="' . App\Core\View::e($recurso) . '"' . ($areaInput !== '' ? ' data-area-input="' . App\Core\View::e($areaInput) . '"' : '') . '>';
+    $html .= '<label for="' . $recurso . '_nombre">' . App\Core\View::e($label) . '</label>';
+    $html .= '<input type="hidden" id="id_' . $recurso . '" name="id_' . $recurso . '" value="' . App\Core\View::e($idSeleccionado) . '">';
+    $html .= '</div>';
+    $html .= '<span>' . App\Core\View::e($error) . '</span>';
+    $html .= '</div>';
+
+    return $html;
+};
+
+$extra = $autocompletarDe(
+    'area',
+    'Área (opcional)',
+    $datos['area_nombre'] ?? '',
+    $datos['id_area'] ?? '',
+    $errores['area'] ?? '',
+    false
+);
+$extra .= $autocompletarDe(
+    'materia',
+    'Materia',
+    $datos['materia_nombre'] ?? '',
+    $datos['id_materia'] ?? '',
+    $errores['materia'] ?? '',
+    true,
+    '#id_area'
+);
+$extra .= $autocompletarDe(
+    'curso',
+    'Curso',
+    $datos['curso_nombre'] ?? '',
+    $datos['id_curso'] ?? '',
+    $errores['curso'] ?? '',
+    true
+);
+
+// ---------------------------------------------------------------------------
+// Horarios (REQ-23/REQ-24, D6): una fila por día con horario de entrada/salida.
+// Sin JS se envían todas las filas; las vacías se descartan en el servidor.
+// ---------------------------------------------------------------------------
+$filas = $filas !== [] ? $filas : [['dia' => '', 'entrada' => '', 'salida' => '']];
+
+$htmlFilas = '';
+foreach ($filas as $indice => $fila) {
+    $htmlFilas .= '<div class="fila-horario" data-fila-horario>';
+    $htmlFilas .= '<select name="dia[]" aria-label="Día">';
+    $htmlFilas .= '<option value="">Día</option>';
+    foreach ($dias as $dia) {
+        $seleccionado = (string) $dia['id'] === (string) ($fila['dia'] ?? '') ? ' selected' : '';
+        $htmlFilas .= '<option value="' . App\Core\View::e($dia['id']) . '"' . $seleccionado . '>' . App\Core\View::e($dia['nombre']) . '</option>';
+    }
+    $htmlFilas .= '</select>';
+    $htmlFilas .= '<input type="time" step="60" name="hora_entrada[]" value="' . App\Core\View::e($fila['entrada'] ?? '') . '" aria-label="Hora de entrada">';
+    $htmlFilas .= '<input type="time" step="60" name="hora_salida[]" value="' . App\Core\View::e($fila['salida'] ?? '') . '" aria-label="Hora de salida">';
+    $htmlFilas .= '</div>';
+}
+
+$extra .= '<div class="inputs-span' . (($errores['horarios'] ?? '') !== '' ? ' is-invalida' : '') . '" key="horarios">';
+$extra .= '<span>*</span>';
+$extra .= '<div class="inputs-entero horarios">';
+$extra .= $htmlFilas;
+$extra .= '<span class="ayuda">Día y horario de la clase. Un día solo admite un horario.</span>';
+$extra .= '</div>';
+$extra .= '<span>' . App\Core\View::e($errores['horarios'] ?? '') . '</span>';
+$extra .= '</div>';
+
+if (($errores['general'] ?? '') !== '') {
+    $extra = '<div class="flash flash-error">' . App\Core\View::e($errores['general']) . '</div>' . $extra;
+}
+
+$formulario = (object) [
+    'titulo' => 'Nuevo curso',
+    'accion' => App\Core\Http::url('escuelas/' . $schoolId . '/cursos'),
+    'datos' => $datosFormulario,
+    'extra' => $extra,
+    'borrar' => 'Limpiar',
+    'aceptar' => 'Crear curso',
+];
+?>
+<?php require __DIR__ . '/formulario.phtml'; ?>

@@ -8,3 +8,6 @@
     <?php endforeach; ?>
   </div>
 <?php endif; ?>
+<?php if (!empty($puedeCrearCurso)): ?>
+  <a class="flotante" href="<?= App\Core\Http::url('escuelas/' . $escuela['id'] . '/cursos/nuevo') ?>" title="Nuevo curso">+</a>
+<?php endif; ?>
