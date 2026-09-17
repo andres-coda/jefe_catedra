@@ -11,9 +11,9 @@
  * (floating label) siga funcionando.
  *
  * Horarios (REQ-23/REQ-24, D6) como filas .fila-horario con arrays paralelos
- * dia[]/hora_entrada[]/hora_salida[]; la primera fila vacía se descarta en el
- * servidor (leerFilas), así el botón "agregar fila" de WU3 puede dejar una de
- * más sin romper la validación.
+ * dia[]/hora_entrada[]/hora_salida[]; el botón "agregar horario" (WU3) clona
+ * la última fila en blanco y las filas vacías se descartan en el servidor
+ * (leerFilas), así la fila de más nunca rompe la validación.
  *
  * @var array<string, mixed> $escuela Escuela del path (REQ-21).
  * @var array<string, string> $datos   Valores enviados (re-render REQ-27).
@@ -133,6 +133,7 @@ $extra .= '<div class="inputs-span' . (($errores['horarios'] ?? '') !== '' ? ' i
 $extra .= '<span>*</span>';
 $extra .= '<div class="inputs-entero horarios">';
 $extra .= $htmlFilas;
+$extra .= '<button type="button" class="btn-agregar-fila" data-agregar-fila>Agregar horario</button>';
 $extra .= '<span class="ayuda">Día y horario de la clase. Un día solo admite un horario.</span>';
 $extra .= '</div>';
 $extra .= '<span>' . App\Core\View::e($errores['horarios'] ?? '') . '</span>';
