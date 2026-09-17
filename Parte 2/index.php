@@ -41,6 +41,7 @@ use App\Controllers\HomeController;
 use App\Controllers\MateriaController;
 use App\Controllers\PerfilController;
 use App\Controllers\ProfesorController;
+use App\Controllers\TareaController;
 use App\Core\AuthMiddleware;
 use App\Core\Http;
 use App\Core\PermissionDeniedException;
@@ -64,6 +65,7 @@ $cursos = new CursoController();
 $areas = new AreaController();
 $materias = new MateriaController();
 $profesores = new ProfesorController();
+$tareas = new TareaController();
 
 // Cadena de middlewares global (diseño D3): Session → Auth → SchoolContext.
 $router = new Router([
@@ -148,6 +150,30 @@ $router->delete('/escuelas/{id}/cursos/{courseId}/profesores/{profesorId}', func
 $router->post('/escuelas/{id}/cursos/{courseId}/profesores/{profesorId}', function (Request $r) use ($profesores): Response {
     PermissionMiddleware::assert('jefe', 'profesor.update', $r);
     return $profesores->desdeFormulario($r);
+});
+
+// -----------------------------------------------------------------------------
+// PR3 — Tareas por curso (Jefe/Directivo/Admin de la escuela):
+//   POST /escuelas/{id}/cursos/{courseId}/tareas
+//   PUT .../tareas/{tareaId}; POST .../tareas/{tareaId} (alias, _accion)
+//   POST .../tareas/{tareaId}/realizado (marcar realizada/pendiente)
+// -----------------------------------------------------------------------------
+
+$router->post('/escuelas/{id}/cursos/{courseId}/tareas', function (Request $r) use ($tareas): Response {
+    PermissionMiddleware::assert('jefe', 'tarea.create', $r);
+    return $tareas->crear($r);
+});
+$router->put('/escuelas/{id}/cursos/{courseId}/tareas/{tareaId}', function (Request $r) use ($tareas): Response {
+    PermissionMiddleware::assert('jefe', 'tarea.update', $r);
+    return $tareas->actualizar($r);
+});
+$router->post('/escuelas/{id}/cursos/{courseId}/tareas/{tareaId}', function (Request $r) use ($tareas): Response {
+    PermissionMiddleware::assert('jefe', 'tarea.update', $r);
+    return $tareas->desdeFormulario($r);
+});
+$router->post('/escuelas/{id}/cursos/{courseId}/tareas/{tareaId}/realizado', function (Request $r) use ($tareas): Response {
+    PermissionMiddleware::assert('jefe', 'tarea.realizado', $r);
+    return $tareas->marcar($r);
 });
 
 try {
